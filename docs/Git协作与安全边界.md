@@ -1,19 +1,26 @@
-# Git 协作与数据边界
+# Git 协作与安全边界
 
-## 代码与生产分离
+本仓库用于源代码评审与协作，不承担生产环境运维、QQ 自动回复、云模型请求或在线数据库托管功能。
 
-- `src/fangyuan-agent`、`src/aurabot-modules`、`src/qq-bootstrap` 是研发用源码快照，不是机器人正在读取的唯一源码目录。
-- `services/` 和 `runtime/` 是本机生产环境：模型、数据库、QQ 会话、密钥、NapCat 配置及日志，不得提交到 Git。
-- `config/project-paths.json` 是可提交的相对路径公共映射；`config/project-paths.local.json` 包含 TJ 机器实际路径，已排除 Git。`config/project-paths.example.json` 可供协作者参考。
-- `archive/`、`operations/migration/`、`research/media-catalog/` 包含历史数据和大型素材，默认不提交。
-- 旧 `fangyuan-dsh` 源码内自带 Git 历史，仅作为本机生产归档保存；不要将其嵌套合并到未来新仓库。
+## 代码位置与真实运行服务
 
-## 建议工作流
+- `src/fangyuan-agent`：基线逻辑与离线测试；`src/aurabot-modules`：Aurabot 扩展源码镜像。相同内容不等于无意义重复，因为装载路径可能不同。
+- `src/qq-bootstrap`：包括历史 MaiBot 时期的工具和仍复用的网关实现；请按调用链确认使用状态，不能一键运行全目录脚本。
+- `services/`、`runtime/`、`archive/`、`research/media-catalog/` 不在仓库中。真实 QQ 会话、密钥、记忆库、日志、语音、原著素材、模型权重都只能留在各自授权环境。
+- `config/project-paths.json` 仅是相对路径映射，可以提交；机器绝对路径覆盖 `config/project-paths.local.json` 永不提交。
+- `operations/` 的布局与漂移脚本专为有生产目录的本机编写，可能读取/写入迁移验收记录；不要在普通开发克隆中执行，除非了解副作用。
 
-1. 从 `src/` 进行开发，在独立环境完成静态检查与本地测试。
-2. 运行 `node operations/check-source-drift.mjs` 对比源码快照与生产目录。
-3. 对拟上线代码进行人工差异审查，备份受影响的配置和数据库，然后有控制地部署。
-4. 检查 `.gitignore`、`git status`、`git diff --cached`，再决定哪些文件允许提交或发布。
-5. 不得把 QQ 账号会话、聊天原始记录、Token、API Key、含授权信息的日志或模型下载凭证上传公开仓库。
+## 拉取请求（PR）与验证
 
-当前尚未执行 `git init`、`git add` 或任何远程推送。迁移现场代码扫描未识别到常见格式的硬编码 API Key，但正则扫描不等于完整安全审计。
+1. 每位协作者使用独立分支或工作树，不同时改同一个可写目录。
+2. 改动模块逻辑：说明来源、实际被谁加载、向前兼容性及独立测试；若须同时更新镜像模块，应在 PR 中明确列出。
+3. 在 `src/fangyuan-agent` 执行 `npm test`（完全离线），并做 Python 语法检查；不得用生产 QQ、真群聊和付费 API 作为日常 CI 测试。
+4. 检查提交差异和 `node tools/audit-staged.mjs` 的结果，禁止提交账号、群号、Token、真实聊天记录、本机绝对路径、模型权重和生成缓存。
+5. 生产部署须另行授权，先做回滚与配置/数据备份；普通 PR 合并不等于生产上线。
+6. 第三方代码、原著引文、音视频素材的权属未完成确认。仓库可见不等于获得再分发许可。
+
+## 公开 Git 历史提示
+
+在本次整理前，仓库初始提交曾包含 Aurabot 构建缓存、旧测试标识及个别本机路径描述。后续提交移除这些内容**不能清除旧 Git 提交历史**。如要真正治理历史，请先变为 Private、审计敏感信息与协作者克隆，再制定保留/重写历史和密钥轮换计划；不可擅自强推改写主分支。
+
+其他迁移文档是历史记录，可能包含只适用于旧环境的路径和状态。

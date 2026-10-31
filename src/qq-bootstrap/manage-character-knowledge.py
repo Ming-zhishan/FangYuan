@@ -47,9 +47,9 @@ async def main():
         report['embedding_recovery'] = await kernel._recover_embedding_once(sample_text='方源原著与研究资料检索检查')
         print(json.dumps({'stage': 'embedding_recovery', 'success': report['embedding_recovery'].get('success')}), flush=True)
         for query in ['三王传承里，方源两次炼蛊结果一样吗？', '仙蛊唯一，是天下只能有一只仙蛊吗？', '方源为什么追求永生？', '方源成尊后仍有什么限制？']:
-            result = await kernel.search_memory(KernelSearchRequest(query=query, limit=3, group_id='680823437', user_id='2449113325'))
+            result = await kernel.search_memory(KernelSearchRequest(query=query, limit=3, group_id=args.group_id, user_id=args.user_id))
             report['searches'].append({'query': query, 'result': result})
-        report['wrong_group'] = await kernel.search_memory(KernelSearchRequest(query='方源', limit=1, group_id='1', user_id='2449113325'))
+        report['wrong_group'] = await kernel.search_memory(KernelSearchRequest(query='方源', limit=1, group_id='1', user_id=args.user_id))
     finally:
         await kernel.shutdown()
         args.report.parent.mkdir(parents=True, exist_ok=True)

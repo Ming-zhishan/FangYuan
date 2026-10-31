@@ -1,4 +1,4 @@
-# Future root repository safety; this file does NOT initialize Git.
+# Repository safety: never track live services, secrets, generated caches or local data.
 /runtime/
 /archive/
 /operations/legacy-tools/
@@ -54,3 +54,11 @@
 
 /operations/migration/
 
+
+# Generated Aurabot snapshots; the canonical sibling source is tracked.
+**/.aurabot-cache/
+# Local-only path override and developer editor files
+/config/project-paths.local.json
+.vscode/
+.idea/
+.DS_Store
