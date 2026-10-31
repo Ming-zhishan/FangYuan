@@ -1,4 +1,25 @@
 import { LoreSearch } from './search.mjs'
+
+const canonical = value => String(value ?? '').replace(/\r\n/g, '\n').trim()
+/** Recalled or quoted text is not sufficient evidence that an old search is relevant now. */
+export function cacheMatchesCurrentTurn(current, previous) {
+  const query = canonical(current), source = canonical(previous)
+  if (!query || !source) return false
+  if (query === source) return true
+  if (!query.includes('\n')) return false
+  let fenced = false
+  for (const line of query.split('\n')) {
+    const part = line.trim()
+    if (part.startsWith('```')) { fenced = !fenced; continue }
+    if (fenced || /^(?:>|&gt;|\[引用|引用[:：]|原消息[:：])/i.test(part)) continue
+    if (part === source) return true
+  }
+  return false
+}
+export function cachedLoreForTurn(entry, current, now = Date.now()) {
+  return entry && Number.isFinite(entry.at) && now >= entry.at && now - entry.at < 120000 &&
+    cacheMatchesCurrentTurn(current, entry.query) && Array.isArray(entry.items) ? entry.items : []
+}
 export const needsOriginalEvidence = (q) => /原著|原文|出处|三王|白凝冰|红莲|凤九歌|谢晗沫|尊者|影宗|青茅|天庭|琅琊|天鹤|方正|重生|九转|修为|海神祭|商心慈|人祖|黑楼兰|太白云生|前世|五百年|仙道杀招|凡道杀招|蛊方|仙蛊|本命蛊|道痕|春秋蝉/.test(q) || /(?:你|方源).{0,10}(?:恩人|师父|师傅)|(?:蛊|炼道|永生|杀招).{0,10}(?:原理|区别|材料|定义)/.test(q)
 export default {
   id: 'lore', name: '方源原著资料', api: 1, version: '0.2.0',
@@ -26,12 +47,13 @@ export default {
     api.on('message', async (msg) => {
       if (!relevant(msg.text || '') || (api.config().ext?.liveGuard?.enforce && !api.use('live-guard')?.permitted(msg.chatId))) return
       cached.set(msg.chatId, { query: msg.text, items: await semantic(msg.text), at: Date.now() })
+      if (cached.size > 64) cached.delete(cached.keys().next().value)
     })
     api.context(({ chat, sessionId }) => {
       if (chat.kind === 'system') return ''
       const query = api.core.hub.lastTextOf?.(sessionId) || ''
       if (!relevant(query)) return ''
-      const prior = cached.get(chat.chatId), hits = prior && query.includes(prior.query) && Date.now() - prior.at < 120000 ? prior.items : []
+      const prior = cached.get(chat.chatId), hits = cachedLoreForTurn(prior, query)
       const lexical = search(query)
       const rows = [...lexical.filter((r) => r.kind === 'reviewed_anchor'), ...(api.use('learning')?.loreContext(query, hits.map((r) => r.id.replace(/^original:/, ''))) || []).slice(0, 2), ...hits, ...lexical.filter((r) => r.kind !== 'reviewed_anchor')]
       const lines = []; let size = 0
