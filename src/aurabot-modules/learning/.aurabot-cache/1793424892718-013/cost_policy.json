@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "mode": "production_gray",
+  "description": "Initial safety limits for DEV TESTS and optional BACKGROUND; production runtime unchanged",
+  "testing": {
+    "defaultProvider": "mock",
+    "requireExplicitLive": true,
+    "perRequestReservedTokens": 12000,
+    "perTaskReservedTokens": 40000,
+    "dailyReservedTokens": 80000,
+    "maxPaidCallsPerTask": 4,
+    "maxPaidCallsPerDay": 12
+  },
+  "background": {
+    "perRequestReservedTokens": 24000,
+    "dailyReservedTokens": 100000,
+    "maxPaidCallsPerHour": 4,
+    "maxOutputTokensByKind": {
+      "daily": 1800,
+      "book": 8192,
+      "review": 8192,
+      "life": 800,
+      "other": 2400
+    },
+    "backoffOnFailure": true,
+    "duplicateJobsMustNotRepay": true,
+    "bulkStudyDefault": false
+  },
+  "costAccounting": {
+    "chargeUncertainFailures": true,
+    "measureActualUsage": true,
+    "neverInferMoneyFromTokens": true,
+    "chargeOnlyPaidProviders": true
+  },
+  "allowLiveInPrototype": true
+}

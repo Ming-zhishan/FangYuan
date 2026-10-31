@@ -1,0 +1,134 @@
+{
+  "enabled": false,
+  "dryRun": true,
+  "ownerName": "操作者",
+  "persona": {
+    "current": "gu-yue-fang-yuan"
+  },
+  "group": {
+    "wakeWords": [
+      "方源",
+      "古月方源",
+      "大爱仙尊",
+      "炼天魔尊"
+    ],
+    "interests": [
+      "蛊真人",
+      "蛊虫",
+      "炼蛊",
+      "修行",
+      "炼道",
+      "律道",
+      "永生"
+    ],
+    "minRelevance": 0,
+    "interjectChance": 0.15,
+    "cooldownSec": 90,
+    "maxPerHour": 6
+  },
+  "memory": {
+    "enabled": false,
+    "dailyConsolidate": false
+  },
+  "mood": {
+    "enabled": false
+  },
+  "voice": {
+    "autoChance": 0
+  },
+  "speakUp": {
+    "enabled": false,
+    "nudge": false
+  },
+  "diary": {
+    "enabled": false
+  },
+  "qzoneSocial": {
+    "enabled": false
+  },
+  "bili": {
+    "enabled": false
+  },
+  "douyin": {
+    "enabled": false
+  },
+  "modules": {
+    "conversation": { "enabled": false, "useBuiltin": false },
+    "fangyuan": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "memory": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "mood": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "speakup": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "diary": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "profile": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "lore": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "learning": {
+      "enabled": true,
+      "useBuiltin": false
+    },
+    "live-guard": {
+      "enabled": true,
+      "useBuiltin": false
+    }
+  },
+  "ext": {
+    "fangyuan": {
+      "specialFriendQQ": "",
+      "scopedMemory": true,
+      "proactive": false,
+      "proactiveTargets": [],
+      "publicActions": false
+    },
+    "profile": {
+      "autonomousSignature": false,
+      "autonomousAvatar": false,
+      "publicAvatars": []
+    },
+    "lore": {
+      "catalogPath": "",
+      "originalDbPath": "",
+      "semanticUrl": "http://127.0.0.1:38494/search"
+    },
+    "learning": {
+      "enabled": false,
+      "modelEnabled": false,
+      "unrestrictedUsage": false,
+      "embeddingEnabled": false,
+      "dailyPoints": 50,
+      "dailyTokenBudget": 1400000,
+      "totalTokenBudget": 19900000,
+      "catchup": true,
+      "originalDbPath": "",
+      "legacyMemoryPath": "",
+      "usageDbPath": ""
+    },
+    "liveGuard": {
+      "enforce": false,
+      "temporaryPrivate": false,
+      "temporaryPrivateContacts": [],
+      "ownerOutbound": false,
+      "ownerGroupOutbound": false,
+      "legacyModePath": ""
+    }
+  }
+}

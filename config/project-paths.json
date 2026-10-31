@@ -1,0 +1,19 @@
+{
+    "version":  2,
+    "canonical":  {
+                      "agentSource":  "src/fangyuan-agent",
+                      "aurabotModulesBaseline":  "src/aurabot-modules",
+                      "mediaResearch":  "research/media-catalog",
+                      "qqRuntime":  "runtime/qq-stack",
+                      "dshProduction":  "runtime/dsh-live",
+                      "legacyOperations":  "operations/legacy-tools",
+                      "historicalReleases":  "archive/legacy-releases",
+                      "qqBootstrap":  "src/qq-bootstrap"
+                  },
+    "note":  "Portable relative project map; local Windows physical backing paths are in project-paths.local.json (gitignored). Junction targets are machine-specific, not shipped in a future Git clone.",
+    "safety":  {
+                   "initGit":  false,
+                   "runtimeStateNotCopiedIntoSource":  true,
+                   "globalEnvironmentUnchanged":  true
+               }
+}

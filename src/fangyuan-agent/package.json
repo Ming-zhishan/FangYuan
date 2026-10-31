@@ -1,0 +1,13 @@
+{
+  "name": "fangyuan-dsh-social-prototype",
+  "private": true,
+  "version": "0.7.3",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "test:upstream": "node --test integration/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

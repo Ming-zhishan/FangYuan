@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "projectRoot": "<PROJECT_ROOT>",
+  "canonical": {
+    "agentSource": "src/fangyuan-agent",
+    "aurabotModulesBaseline": "src/aurabot-modules",
+    "mediaResearch": "research/media-catalog",
+    "qqRuntime": "runtime/qq-stack",
+    "dshProduction": "runtime/dsh-live",
+    "legacyOperations": "operations/legacy-tools",
+    "historicalReleases": "archive/legacy-releases",
+    "qqBootstrap": "src/qq-bootstrap"
+  },
+  "physicalBacking": {
+    "qqRuntime": "services/qq/work",
+    "dshProduction": "services/dsh/work/dsh-runtime",
+    "legacyOperations": "services/dsh/work",
+    "historicalReleases": "services/dsh/outputs"
+  },
+  "backwardsCompatibility": {},
+  "notes": "Set machine-specific paths in ignored project-paths.json or project-paths.local.json; do not commit production secrets"
+}

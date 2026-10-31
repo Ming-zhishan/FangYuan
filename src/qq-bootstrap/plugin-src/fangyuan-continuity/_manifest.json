@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "id": "local.fangyuan-continuity",
+  "version": "0.3.0",
+  "name": "方源连续生活与认知",
+  "description": "共享角色上下文、独立社交记忆与有上限的一致性检查。",
+  "author": {"name": "Local", "url": "http://127.0.0.1/local-only"},
+  "license": "MIT",
+  "urls": {"repository": "http://127.0.0.1/local-only/fangyuan-continuity"},
+  "i18n": {"default_locale": "zh-CN", "supported_locales": ["zh-CN"]},
+  "plugin_type": "extension",
+  "host_application": {"min_version": "1.3.12", "max_version": "1.3.99"},
+  "sdk": {"min_version": "2.15.0", "max_version": "2.99.99"},
+  "capabilities": ["message.get_by_id", "message.get_recent", "chat.get_stream_by_group_id"]
+}
