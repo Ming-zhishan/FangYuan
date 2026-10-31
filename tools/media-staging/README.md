@@ -92,3 +92,10 @@ Suggested run order in a wholly private owner-marked research directory:
 6. Only a designated production integrator may change the QQ Bot runtime after reviewing media rights, back-ups, versioned manifests and real private-recipient acceptance.
 
 Isolated TJ evidence from 2026-11-01: independent fresh nine-platform crawl succeeded (246 items), merged with older snapshot for 398 unique leads; 80 research Wiki terms; 11 SHA-verified originals; six original zero-shot F5 clips across two independent runs (first three independently decoded); no production approvals. Check private audit files for exact validation details. Never upload copyrighted reference files, research recordings or local absolute paths to the public Git repository.
+
+## Stage 5 — scene-specific meme selection and OneBot preflight
+
+- meme_scene_catalogue.mjs reads 11 SHA-verified local reference images/GIFs and gives each a concrete QQ reply-context tag set. Human images are marked local-edit-only or deferred animation; animals, objects, famous animation characters and packaging stay original. There is NO forced Fang Yuan-face conversion and NO promotion to production.
+- With the existing media semantic selector loaded read-only, the TJ real-data evaluation matched all six focused fixtures: disbelief, amusement, leaving, absurdity, emergency seriousness, and irrelevant novel discussion. The emergency and unrelated messages must not trigger image reactions.
+- The separate private OneBot WAV envelope test ran the existing qq_voice_media_adapter.recordSegment function without any network or QQ action. All six new F5 WAV files round-tripped through base64 record encoding with identical SHA-256. readyForVoiceAsset correctly remained false for every unreviewed sample.
+- Neither of these tests proves a person actually received or liked an image/voice message, and all copyright/speaker/consent checks remain separate production gates.
