@@ -1,5 +1,7 @@
 # 协作规范
 
+**多媒体开发必须先阅读 [多媒体工程铁则](docs/MEDIA_ENGINEERING_RULES.md)，并以实际验收证据与当前“仅私聊”安全边界为准。**
+
 1. 请先阅读 README、[Git协作与安全边界](docs/Git协作与安全边界.md) 和 [安全闸门](docs/SECURITY_RELEASE_GATE.md)。
 2. 新功能、修复、文档分别在 `feature/*`、`fix/*`、`docs/*` 分支提交 PR；每个独立开发助手使用自己的工作树。
 3. 解释改动对 DSH NEXT、Aurabot、NapCat、Ollama、云网关的依赖，注明源文件与镜像模块同步要求。
