@@ -3,6 +3,7 @@ import { mkdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { normalizeVoiceEnvelope } from './envelope.mjs'
+import { listInstalledWindowsVoices, shouldUseWindowsVoice } from './capability.mjs'
 
 /** Keep native media/ASR routes; provide an installed Chinese male voice without an online dependency. */
 export default {
@@ -27,7 +28,19 @@ export default {
       if (statSync(file).size < 1000) throw new Error('语音文件不完整')
       return { file }
     }
-    const preferred = () => process.platform === 'win32' && api.config().ext?.voice?.preferLocalMale === true
+    // Return to native TTS if the selected Windows voice is absent; never claim a missing voice is available.
+    let observed = [], checkedAt = 0
+    const preferred = () => {
+      const cfg = api.config().ext?.voice || {}
+      if (cfg.preferLocalMale !== true || process.platform !== 'win32') return false
+      const now = Date.now()
+      if (!checkedAt || now - checkedAt >= 600000) {
+        observed = listInstalledWindowsVoices()
+        checkedAt = now
+      }
+      return shouldUseWindowsVoice({ platform: process.platform, enabled: true,
+        requestedName: cfg.windowsVoice || 'Microsoft Kangkang', installedNames: observed })
+    }
     return native.setup({ ...api, core: { ...api.core, local: {
       ...local,
       active: (kind) => kind === 'tts' && preferred() || local?.active?.(kind),
