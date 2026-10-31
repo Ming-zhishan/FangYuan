@@ -1,9 +1,15 @@
+import { currentBatch } from './current-batch.mjs'
 const tags = s => String(s).match(/<(?:at|reply|sticker):[^>]+>|<\/?voice>/g) || []
 export function mustRespond(chatId, rows, userText) {
   if (chatId.startsWith('private:')) return true
   const lastBot = rows.findLastIndex(r => r.role === 'bot')
   const users = rows.slice(lastBot + 1).filter(r => r.role === 'user')
-  const current = users.filter(r => r.text?.trim() && String(userText).includes(r.text))
+  const batch = currentBatch(users, userText)
+  const ids = new Set(batch.sourceIds)
+  const current = ids.size
+    ? users.filter(r => ids.has(r.id))
+    : batch.matchQuality === 'ambiguous_sender' ? [] : users.filter(r => r.text?.trim() && String(r.text).trim() === String(userText ?? '').trim())
+  // If the host has not persisted this turn yet, the latest observed user is the fallback.
   return (current.length ? current : users.slice(-1)).some(r => r.direct === true || r.direct === 1)
 }
 export function applyReviewDecision(draft, decision, { direct = true, catalog = [], voiceEnabled = false, currentSenderUids = [] } = {}) {

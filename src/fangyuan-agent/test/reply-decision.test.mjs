@@ -17,3 +17,23 @@ test('semantic reviewer may choose an existing sticker or enabled voice, without
   for(const text of ['<at:999999>在。','<reply:unknown>在。',`<sticker:id:${'b'.repeat(32)}>`,'<voice>在。</voice>'])assert.equal(applyReviewDecision('在。',changed(text),{catalog:[asset],voiceEnabled:false}).text,'在。')
   assert.equal(applyReviewDecision('在。',changed('<voice>在。'),{voiceEnabled:true}).text,'在。')
 })
+
+test('directness is determined by the current complete message, not a stale substring', () => {
+  const rows=[
+    {id:'old',role:'user',uid:'111111',text:'在',direct:true},
+    {id:'now',role:'user',uid:'222222',text:'你在吗',direct:false}
+  ]
+  assert.equal(mustRespond('group:444444',rows,'你在吗'),false)
+  rows[1].direct=true
+  assert.equal(mustRespond('group:444444',rows,'你在吗'),true)
+})
+
+test('duplicate wording with mixed directness uses only the latest observed turn', () => {
+  const rows=[
+    {id:'old',role:'user',uid:'111111',text:'难绷',direct:true},
+    {id:'latest',role:'user',uid:'222222',text:'难绷',direct:false}
+  ]
+  assert.equal(mustRespond('group:444444',rows,'难绷'),false)
+  rows[1].direct=true
+  assert.equal(mustRespond('group:444444',rows,'难绷'),true)
+})
