@@ -1,0 +1,101 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>方源媒体工厂｜表情包与语音研发工作台</title><style>
+:root{color-scheme:dark;font-family:"Microsoft YaHei",system-ui,sans-serif;background:#10151e;color:#ecf1f7}*{box-sizing:border-box}
+body{margin:0}header{padding:26px 4%;background:linear-gradient(115deg,#182b3b,#141c2a);border-bottom:1px solid #33435a}
+h1{font-size:25px;margin:0}h2{font-size:20px}h3{font-size:16px;margin:0 0 9px}.sub{color:#afbdc9;font-size:13px}
+main{max-width:1380px;margin:auto;padding:24px 28px 80px}.stats{display:flex;gap:12px;flex-wrap:wrap}
+.stat{flex:1;min-width:130px;background:#1c2735;border:1px solid #35465b;border-radius:12px;padding:12px}
+.stat b{display:block;font-size:26px;margin-top:5px}.stat small{color:#a9bdc9}
+nav{display:flex;gap:9px;flex-wrap:wrap;margin:25px 0}button{padding:9px 14px;border-radius:9px;background:#243448;border:1px solid #4b647a;color:#ecf1f8;font:inherit;cursor:pointer}
+button.active{background:#34617b;border-color:#80b5d0}button:hover{background:#3d5570}
+section{display:none}section.active{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:15px}
+.card{background:#1a2736;border:1px solid #34475b;border-radius:13px;overflow:hidden}
+.visual{height:205px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0c1520}
+.visual img{display:block;max-height:100%;max-width:100%;object-fit:contain}
+.card-body{padding:15px 16px}.meta{font-size:12px;color:#b5c7d5;overflow-wrap:anywhere;margin:6px 0}
+a{color:#96cbe6}a:focus-visible,button:focus-visible{outline:2px solid #83bddf;outline-offset:3px}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;border:1px solid #697b94;color:#b8d7e8;margin-right:6px}
+.badge.warn{border-color:#8c6450;color:#ffccab;background:#48372c}
+.audio-panel{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+audio{display:block;width:100%;margin:9px 0 16px}
+.msg{background:#202e3d;border-radius:12px;border:1px solid #39516b;padding:14px;color:#d3dfec;font-size:13px;margin:18px 0}
+.paper{background:#192534;border:1px solid #33465b;padding:15px;border-radius:12px;margin:12px 0}
+.leads{max-height:65vh;overflow:auto;border:1px solid #354759;border-radius:11px}
+.lead{padding:10px 14px;border-bottom:1px solid #2c4052;display:grid;grid-template-columns:90px 70px minmax(190px,1fr) 100px;gap:12px;align-items:center;font-size:12px}
+.lead:nth-child(2n){background:#182536}.lead a{white-space:normal}
+input,select,textarea{background:#101a27;color:#e5eef8;border:1px solid #4e657b;border-radius:8px;padding:10px;font:inherit}
+input[type=search]{width:min(100%,440px)}textarea{display:block;width:100%;height:80px;margin:10px 0;resize:vertical}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.small{font-size:12px;color:#9facbd}
+@media(max-width:850px){.audio-panel{grid-template-columns:1fr}main{padding:14px}.lead{grid-template-columns:65px 1fr;gap:5px}}
+</style></head><body><header>
+<h1>方源 Bot｜表情包与语音研发工厂</h1>
+<div class="sub">独立研发 · 多快照增量去重 · 原图与语音研究实物 · 本地试听审核 · 不连接 QQ 生产</div>
+</header><main><div class="stats" id="stats"></div>
+<div class="msg"><b>工程声明：</b>此页所有文件均来自隔离研究目录。母图完整性和音频技术检测与“原作者授权、真人听感、正式部署”是三个不同的关口。任何预览或内部审核备注都不构成公开发布许可。此工作台不向服务器传输数据、不修改 Bot 配置。</div>
+<nav><button data-tab="meme" class="active">表情包母版</button><button data-tab="voice">新语音样本</button><button data-tab="trend">跨批次热榜候选</button><button id="export" style="margin-left:auto">导出审核备注</button></nav>
+<section class="active" id="meme"><h2>真实原始媒体（均保留原图）</h2><p class="sub">含旧研究的 8 份母版与新取得的 3 份原版参考。非人物原图不强行方源化；点击可查看原文件。</p><div class="grid" id="meme-grid"></div></section>
+<section id="voice"><h2>本地 F5 原创短句语音试听</h2><p class="sub">参考声线为用户声明许可下的私有实验素材。前三条为刚生成的 24kHz WAV。拼音一致性不等于逐字无误或真人音色合格。</p><div class="audio-panel" id="voice-grid"></div></section>
+<section id="trend"><h2>跨两次采集的研究线索</h2><p class="sub">只把关键词和排名当作待查线索，不能把任意热点新闻强行转换成表情包。支持无上限导入；界面仅负责过滤和排序。</p><div class="filters"><input type="search" id="search" placeholder="搜索关键词、来源平台或标题"/><select id="priority"><option value="all">所有分类</option><option value="high">高优先梗候选</option><option value="background">其他研究线索</option><option value="sensitive_hold">敏感内容隔离</option></select><span id="count" class="small"></span></div><div class="leads" id="leads"></div></section>
+<div class="paper"><b>内部审核备注：</b>选中某条后可记录审美、原著人设、转录问题。点击导出后才保存至本机下载目录，绝不会自动导入生产。</div><textarea id="note" placeholder="例如：声音01听感偏机械；某张表情仍需找到原作者和许可；素材标签容易误触发..."></textarea>
+<footer class="small">生成时间 <span id="at"></span> · 研究材料仅限当前项目内部使用 · 核验与发布为独立流程</footer>
+</main><script type="application/json" id="data">__MEDIA_FACTORY_PAYLOAD__</script><script>
+'use strict';
+const data=JSON.parse(document.getElementById('data').textContent);
+const by=id=>document.getElementById(id);
+const n=(tag,text,cls)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=String(text);if(cls)x.className=cls;return x};
+const link=(url,label)=>{const a=n('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a};
+const stats=[['跨批次去重热点',data.stats.leads],['快照批次',data.stats.snapshots],['研究原媒体',data.stats.originalMedia],['本地语音样本',data.voices.length],['正式发布',0]];
+stats.forEach(([label,value])=>{const x=n('div',undefined,'stat');x.append(n('small',label),n('b',value));by('stats').append(x)});
+by('at').textContent=data.createdAt;
+for(const m of data.memelist){
+ const c=n('article',undefined,'card'),v=n('div',undefined,'visual');const a=link(m.file,'');const im=n('img');im.src=m.file;im.alt=m.title;im.loading='lazy';a.append(im);v.append(a);c.append(v);
+ const b=n('div',undefined,'card-body');b.append(n('h3',m.title));
+ b.append(n('span',m.license?'许可待核':'研究来源未核','badge warn'));
+ b.append(n('span',(m.frames>1?'GIF '+m.frames+' 帧':'静态原图'),'badge'));
+ b.append(n('div',m.width+' × '+m.height+' · '+m.bytes+' bytes','meta'));
+ b.append(n('div','SHA-256：'+m.sha256,'meta'));
+ b.append(n('div',m.note,'meta'));
+ if(m.sourceUrl)b.append(link(m.sourceUrl,'查看来源说明'));
+ c.append(b);by('meme-grid').append(c);
+}
+for(const x of data.voices){
+ const card=n('article',undefined,'card'),body=n('div',undefined,'card-body');
+ body.append(n('h3',x.id+' · '+x.text));body.append(n('span',x.technical?'音频技术检查通过':'技术异常','badge '+(x.technical?'':'warn')));
+ body.append(n('span','待真人听审／待声线批准','badge warn'));
+ const a=n('audio');a.controls=true;a.preload='metadata';a.src=x.file;body.append(a);
+ body.append(n('div','Whisper 原文复核：'+x.recognized,'meta'));
+ body.append(n('div','拼音序列吻合：'+Math.round(x.pinyin*100)+'% ／ 原始字形吻合：'+Math.round(x.rawChars*100)+'%','meta'));
+ body.append(n('div','时长 '+x.duration+' 秒 · 采样率 '+x.sampleRate+' Hz · 峰值 '+x.peak+' · 削波 '+x.clipped,'meta'));
+ body.append(n('div','SHA-256：'+x.sha256,'meta'));
+ card.append(body);by('voice-grid').append(card);
+}
+function drawLeads(){
+ const q=by('search').value.trim().toLowerCase(),prio=by('priority').value;
+ const rows=data.leads.filter(x=>(prio==='all'||x.priority===prio)&&(!q||(x.title+' '+x.platform).toLowerCase().includes(q)));
+ const box=by('leads');box.textContent='';by('count').textContent=rows.length+' / '+data.leads.length+' 条';
+ const frag=document.createDocumentFragment();
+ for(const item of rows){
+  const line=n('div',undefined,'lead');
+  line.append(n('span',item.platform),n('span',item.rank??'?'),link(item.url,item.title),n('span',item.priority));
+  frag.append(line);
+ }
+ box.append(frag);
+}
+by('search').addEventListener('input',drawLeads);by('priority').addEventListener('change',drawLeads);drawLeads();
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('active',s.id===btn.dataset.tab));
+ document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));
+}));
+const initialTab=location.hash.slice(1);
+if(['meme','voice','trend'].includes(initialTab)){
+ const trigger=Array.from(document.querySelectorAll('[data-tab]')).find(b=>b.dataset.tab===initialTab);
+ if(trigger)trigger.click();
+}
+by('export').addEventListener('click',()=>{
+ const notes={generatedAt:new Date().toISOString(),type:'private_review_note_not_license',
+   note:by('note').value,productionReady:false,qqReady:false};
+ const blob=new Blob([JSON.stringify(notes,null,2)],{type:'application/json'});
+ const u=URL.createObjectURL(blob),a=n('a');a.href=u;a.download='FangYuan_媒体研发复核备注.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1200);
+});
+</script></body></html>

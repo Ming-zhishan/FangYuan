@@ -69,3 +69,26 @@ ASR review triage is heuristic: **high** when similarity < 0.50, the two segment
 **Editorial approval is not deployment authorization.** Another authorized integrator must separately validate original artifacts and permission scope, approve the specific release batch, check QQ identity/permissions, back up production, run staged tests, and record the real recipient-side result before any release. Current group-disabled and zero-media-auto policies remain unchanged.
 
 `review.test.mjs` uses synthetic isolated fixtures to test review prioritization, source SHA-256 binding, ASR tampering, concurrent source changes, rejection/evidence gates, blank templates, and output ownership. No research data, production files, QQ messages, or paid model calls are needed.
+
+## Stage 4 — repeatable factory and newly synthesized voice packs
+
+This is a development and private research workflow. It never modifies Aurabot, QQ, the original producer SQLite, or another collaborator's code. It has no fixed daily item or execution cap; editorial relevance and licensing still gate what is considered for production.
+
+- factory.mjs: read the FULL TrendRadar raw NewsNow SQLite rather than the truncated top-20 preview; merge old Wiki terms and checksum-verified original media. It stores every snapshot in an independently owned SQLite DB and deduplicates repeated runs. Sensitive news never becomes an approved meme. Use --previous only for a previously closed factory output DB. Always create a NEW output directory. No direct QQ send.
+- source_shadow.py: safely create a private SQLite backup and byte-for-byte media copies, join a fresh independently crawled TrendRadar snapshot and extra original references. It never checkpoints/writes the producer database. It records original-media rights as unverified.
+- run_factory_cycle.py: optional independent TrendRadar refresh, single-writer lock, fresh source shadow, incremental factory, integrity check and atomic LATEST.json pointer. Duplicate snapshots automatically skip. It does NOT create an OS scheduled task; call at the desired cadence from a task that exclusively owns this root.
+- synthesize_f5.py: reusable local F5 zero-shot generator with explicit SHA-256 reference verification, original text JSON, deterministic seeds, peak limiter, signal QC and all-release-flags-false. It performs no paid model calls and no training. This remains private research; a human must validate timbre, speaker attribution and usage rights.
+- asr_voicepack.py: independent cached offline Whisper small decoding of newly synthesized samples; compare raw Han characters and pinyin separately. Traditional/Simplified differences often reduce raw character score without altering phonetics. Pinyin 100% CAN mask semantic homophones and is not a word-accuracy certificate.
+- audio_qa.py: independent WAV technical QC; flags saturation and non-finite/invalid data. Peak limiting cannot restore lost audio from an earlier clipped waveform.
+- build_review_dashboard.py + dashboard_template.html: local HTML showing complete cross-snapshot lead search, 11 real original meme files and the three R&D WAVs with hashes, recognition, playback, rights reminders and an offline notes export. No external JavaScript or QQ.
+
+Suggested run order in a wholly private owner-marked research directory:
+
+1. Clone the TrendRadar code and config into a uniquely owned copy; keep its notifications and in-app auto-scheduler OFF, and disable browser launches. Point a public-data fetch run exclusively at that copy.
+2. Run run_factory_cycle.py with --root, --crawler, --crawler-python, --research, --external, --source-shadow and --factory-js (all are input paths; never use the live Bot root as output). Supply --refresh when a fresh crawl is wanted. Repeat calls with unchanged source are skipped safely.
+3. Check CYCLE_FINAL.json, FACTORY_FINAL.json, and the SHA-256 source metadata, then inspect the content. A high-priority title is a RESEARCH LEAD, NOT an original image or publishable meme.
+4. Provide a permitted voice reference and matching transcript; run synthesize_f5.py --dry-run first, then without it into a NEW private output directory. Source words are ORIGINAL lines; use the real speaker consent scope for reference audio.
+5. Run asr_voicepack.py, audio_qa.py, and build_review_dashboard.py to review real audio and image candidates, then explicitly approve individual items for a separate integration batch.
+6. Only a designated production integrator may change the QQ Bot runtime after reviewing media rights, back-ups, versioned manifests and real private-recipient acceptance.
+
+Isolated TJ evidence from 2026-11-01: independent fresh nine-platform crawl succeeded (246 items), merged with older snapshot for 398 unique leads; 80 research Wiki terms; 11 SHA-verified originals; six original zero-shot F5 clips across two independent runs (first three independently decoded); no production approvals. Check private audit files for exact validation details. Never upload copyrighted reference files, research recordings or local absolute paths to the public Git repository.
