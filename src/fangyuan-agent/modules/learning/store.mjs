@@ -245,6 +245,31 @@ export class LearningStore {
       days.add(r.day); return true
     }).slice(0, limit).reverse()
   }
+  /** Measured speaking shell from a person's own messages: rhythm, split habit and punctuation, never their wording. */
+  styleProfile(uid, scope = '', limit = 240) {
+    const wide = validScope(scope)
+    const rows = this.db.prepare(`SELECT text,at FROM messages WHERE uid=? AND role='user' AND forgotten=0 AND length(text)>0 ${wide ? 'AND scope=?' : ''} ORDER BY at DESC LIMIT ?`).all(String(uid), ...(wide ? [scope] : []), limit).reverse()
+    if (rows.length < 8) return null
+    const chars = rows.map((r) => [...r.text.trim()].length).filter((n) => n > 0)
+    if (!chars.length) return null
+    const pct = (n, d) => (d ? Math.round((n / d) * 100) / 100 : 0)
+    const endsWith = (re) => pct(rows.filter((r) => re.test(r.text.trim())).length, chars.length)
+    const runLengths = []
+    let previous = -Infinity
+    for (const r of rows) { if (r.at - previous > 45000) runLengths.push(0); runLengths[runLengths.length - 1]++; previous = r.at }
+    return {
+      samples: rows.length,
+      avgChars: Math.round(chars.reduce((a, b) => a + b, 0) / chars.length),
+      shortRate: pct(chars.filter((n) => n <= 8).length, chars.length),
+      runMean: Math.round((rows.length / runLengths.length) * 10) / 10,
+      multiRunRate: pct(runLengths.filter((n) => n > 1).length, runLengths.length),
+      periodRate: endsWith(/[。.]$/),
+      questionRate: endsWith(/[？?]$/),
+      bangRate: endsWith(/[！!]$/),
+      fillerRate: pct(rows.filter((r) => /[啊吧呢嘛哦哈呗啦咯嘞诶哎]/.test(r.text)).length, chars.length),
+      emojiRate: pct(rows.filter((r) => /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(r.text)).length, chars.length),
+    }
+  }
   context(scope, people = [], query = '', maxChars = 6000) {
     if (!validScope(scope)) return ''
     const ids = scope.startsWith('private:') ? [scope.slice(8)] : [...new Set(people.map(String))]
@@ -257,10 +282,12 @@ export class LearningStore {
     for (const uid of ids) {
       const a = this.publicRelationship(uid)
       if (a.affinity || Object.keys(a.impressions).length) lines.push(JSON.stringify({ ...a, note: '同一账号的群聊和私聊共同形成的内部印象与好感，无服从阈值，亦不据此授予权限；勿念分数或公开私密依据。先理解当前语境，不按数值套话。familiarity熟悉不等于全知，trust信任不代替事实；banter是互损的容忍与参与空间，不要求时时攻击；directness是表达清楚，不要求审问；elaboration是所需细节，warmth是温和倾向，低值也不要求轻蔑。-1到1只是可修正倾向，认真、困惑或想结束的当前信号优先。' }))
+      const register = this.styleProfile(uid, scope)
+      if (register) lines.push(JSON.stringify({ uid, speakingRegister: register, note: '从这个人真实消息统计的说话外壳：句长、拆条节奏、句末标点、语气词与表情习惯。只借节奏，不借措辞；不复制口癖，不改变你自己要说的内容与立场。periodRate低说明他很少用句号，不等于你也可以省掉问号。' }))
     }
     const styles = items.filter((r) => r.kind === 'style').slice(0, 4)
     const chosen = [...new Map([...styles, ...items.slice(0, 10)].map((r) => [r.id, r])).values()]
-    for (const row of chosen) lines.push(JSON.stringify({ uid: row.uid, kind: row.kind, learned: row.text, source: row.source, scene: row.scope, status: row.kind === 'impression' ? 'tentative' : 'sourced_summary', ...(row.kind === 'style' ? { note: '随互动修正的用语观察或复盘建议，不是固定台词；群内别人的样本不代表当前人也如此' } : {}) }))
+    for (const row of chosen) lines.push(JSON.stringify({ uid: row.uid, kind: row.kind, learned: row.text, ...(row.kind === 'style' && row.quote ? { sample: String(row.quote).slice(0, 120) } : {}), source: row.source, scene: row.scope, status: row.kind === 'impression' ? 'tentative' : 'sourced_summary', ...(row.kind === 'style' ? { note: 'sample 是对方原话片段，只用来看语域与接法，不要复述、引用或当成台词；learned 是随互动修正的复盘建议，不是固定句式' } : {}) }))
     const terms = this.db.prepare("SELECT t.term,t.result FROM terms t JOIN messages m ON m.id=t.source WHERE t.kind='public_term' AND t.status='learned' AND m.forgotten=0 ORDER BY t.rowid DESC LIMIT 100").all()
     for (const t of terms.filter((t) => query.includes(t.term)).slice(0, 2)) { const r = JSON.parse(t.result); lines.push(JSON.stringify({ term: t.term, meaning: r.meaning, confidence: r.confidence, sources: (r.sources || []).slice(0, 2).map((s) => s.url), note: '搜索摘要释义供参考，本群用法以实际上下文为准' })) }
     const gaps = this.db.prepare("SELECT g.*,c.status,c.error FROM gaps g LEFT JOIN coverage c ON c.gap=g.id AND c.scope=? WHERE g.end>? AND g.reason!='delivery_reconciliation' ORDER BY g.end DESC LIMIT 2").all(scope, this.clock() - 7 * 86400000)
