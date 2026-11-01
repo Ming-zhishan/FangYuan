@@ -1,7 +1,9 @@
 /** The host's current query is the new turn; recalled rows are context, never a new queue of commands. */
 export function currentBatch(recent, query) {
   const text = String(query || '')
-  const matches = recent.filter(r => r.role === 'user' && r.text?.trim() && text.includes(r.text.trim()))
+  // A short old utterance such as “好” inside a new sentence is not a new speaker.
+  const bounded = '\n' + text.replaceAll('\r\n', '\n').trim() + '\n'
+  const matches = recent.filter(r => r.role === 'user' && r.text?.trim() && bounded.includes('\n' + r.text.replaceAll('\r\n', '\n').trim() + '\n'))
   const latest = new Map()
   for (const row of matches) latest.set(row.uid + '|' + row.text, row)
   const rows = [...latest.values()]
