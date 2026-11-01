@@ -69,3 +69,22 @@ ASR review triage is heuristic: **high** when similarity < 0.50, the two segment
 **Editorial approval is not deployment authorization.** Another authorized integrator must separately validate original artifacts and permission scope, approve the specific release batch, check QQ identity/permissions, back up production, run staged tests, and record the real recipient-side result before any release. Current group-disabled and zero-media-auto policies remain unchanged.
 
 `review.test.mjs` uses synthetic isolated fixtures to test review prioritization, source SHA-256 binding, ASR tampering, concurrent source changes, rejection/evidence gates, blank templates, and output ownership. No research data, production files, QQ messages, or paid model calls are needed.
+
+## Focused voice-direction review (2026-11-01)
+
+`build_voice_focus.py` and `voice_focus_template.html` reuse three existing, phonetic-screened candidates plus the existing permitted reference. This step asks whether the current voice direction is suitable before producing more takes. It performs no synthesis, pitch/time modification, network access or QQ action.
+
+Requirements: Python + NumPy for WAV preparation; the feedback validator needs only the standard library. Inputs are a private canonical JSON index (`entries`: id/text/file/sha256/pinyinScore), permitted mono PCM16 reference WAV and its SHA-256. Current chosen IDs are fy-original-01, fy-clarity-v6-01a and fy-scene-v3-05; they must exist and have pinyinScore=1. This is an automatic screening condition, not human word accuracy or voice approval. The canonical index is an existing private Stage 6 artifact documented at media commit `294fa3c`, not a bundled audio asset.
+
+```powershell
+python tools/media-staging/build_voice_focus.py --index "<PRIVATE_CANONICAL_INDEX>" --reference "<PERMITTED_REFERENCE_WAV>" --reference-sha256 "<REFERENCE_SHA256>" --template tools/media-staging/voice_focus_template.html --out "<NEW_PRIVATE_REVIEW_FOLDER>"
+python -m unittest discover -s tools/media-staging -p voice_focus_test.py -v
+```
+
+The output parent needs the same task-ownership marker documented above. Source audio folders and existing outputs are rejected. Outputs are index.html, manifest.json and four preview WAVs. Open index.html from the local folder; all audio links are relative. Never upload the private outputs to this public repository.
+
+Each preview uses **linear gain to whole-clip RMS 0.1**; this is not LUFS or perceptual loudness normalization. Reject a clip if that gain would exceed peak 0.95 instead of silently compressing it. Original audio is untouched; sample rate, duration and pitch remain unchanged. Source and preview SHA-256 are both recorded. Refuse empty/invalid inputs and verify PCM roundtrip.
+
+The page collects one overall direction and optional per-clip pronunciation/delivery/synthetic-voice feedback, supports skipping, local saving and JSON download. `validate_feedback(manifest, feedback)` checks the exact index/review-set hashes and original/preview hashes; preferences never authorize deployment. A changed preview set gets separate browser state so stale choices are not reused. Returned validation is subjective triage only.
+
+Actual TJ evidence for this iteration: 4 clips, 15.433 seconds total; gain-only preparation reproduces the same four audio hashes. Headless browser decoded and played all four clips and verified refresh persistence, real JSON download/import and rejection of a tampered hash. Five feedback-gate unit tests passed. Human listening remains pending; no new synthesized samples, production writes or QQ sends. Keep existing original research audio and the stable review entry until a separately checked promotion is ready.

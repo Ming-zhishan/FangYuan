@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>方源语音｜先确定声音方向</title>
+<style>body{max-width:900px;margin:0 auto;padding:24px;font:16px/1.7 system-ui,"Microsoft YaHei",sans-serif;background:#101723;color:#edf3fa}h1{font-size:26px}h2{font-size:19px}section{background:#1c293a;border:1px solid #465469;border-radius:12px;padding:18px;margin:16px 0}audio{width:100%;margin:8px 0}button,select,textarea{font:inherit;color:inherit;background:#20354b;border:1px solid #5a7791;border-radius:8px;padding:9px}button{cursor:pointer}button.active{background:#326c7e;border-color:#91d5df}button:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #a4d3ec}textarea{box-sizing:border-box;width:100%;margin-top:12px}.actions{display:flex;gap:8px;flex-wrap:wrap}.sub{color:#b4c5d6;font-size:14px}#export{background:#286f78;margin-top:18px}</style>
+<h1>先确定声音方向</h1><p>原声参考＋三条候选，共约16秒。先比较音色，再判断吐字、语气和合成感。可以跳过不确定的项。</p>
+<p class="sub">本页只调整试听音量，保留原来的音高、速度和停顿；三条候选使用同一声线，不是三种不同声音。你的评价用于下一轮修音。</p>
+<main id="clips"></main>
+<section><h2>整体声音方向</h2><div class="actions" id="direction"><button data-value="continue">接近，继续这个方向</button><button data-value="change">不像，先改声线</button><button data-value="unreviewed">暂不判断</button></div><p id="status" class="sub"></p><button id="export">保存本次语音反馈</button></section>
+<p class="sub">尚未定稿，也未发送到QQ。原声来自配音木成的现有研究参考。页面和音频均在本地。</p>
+<script type="application/json" id="data">__DATA__</script><script>
+const D=JSON.parse(document.getElementById('data').textContent),key='fy_voice_focus_'+D.reviewSetId;
+let S={direction:'unreviewed',records:{}};try{const v=JSON.parse(localStorage.getItem(key));if(v&&v.records)S=v}catch{}
+const e=(tag,text)=>{const x=document.createElement(tag);if(text!==undefined)x.textContent=text;return x};
+function save(){localStorage.setItem(key,JSON.stringify(S));draw()}
+function draw(){document.querySelectorAll('#direction button').forEach(x=>x.classList.toggle('active',S.direction===x.dataset.value));document.getElementById('status').textContent='已在此浏览器保存 '+Object.values(S.records).filter(x=>x.choice&&x.choice!=='unreviewed').length+' 项评价。未选择仍为待审。'}
+for(const [i,x]of D.records.entries()){
+ const card=e('section');card.dataset.id=x.id;card.append(e('h2',i===0?'原声参考｜约7秒':String(i)+' · '+x.scene),e('p',x.text));
+ const audio=e('audio');audio.src=x.file;audio.controls=true;audio.preload='metadata';card.append(audio);
+ if(i){const select=e('select');select.setAttribute('aria-label',x.scene+'评价');for(const [v,t]of [['unreviewed','暂不判断'],['keep','自然，可以保留'],['pronunciation','吐字有问题'],['delivery','语气或停顿不合适'],['synthetic','合成感明显']]){const o=e('option',t);o.value=v;select.append(o)}select.value=S.records[x.id]?.choice||'unreviewed';select.onchange=()=>{S.records[x.id]={...(S.records[x.id]||{}),choice:select.value};save()};const note=e('textarea');note.rows=2;note.maxLength=400;note.placeholder='可选：具体哪里不像、哪里生硬';note.value=S.records[x.id]?.note||'';note.onchange=()=>{S.records[x.id]={...(S.records[x.id]||{}),note:note.value};save()};card.append(select,note)}
+ document.getElementById('clips').append(card)
+}
+document.querySelectorAll('#direction button').forEach(b=>b.onclick=()=>{S.direction=b.dataset.value;save()});
+document.getElementById('export').onclick=()=>{const feedback={schema:1,purpose:'voice_direction_feedback',sourceIndexSha256:D.sourceIndexSha256,reviewSetId:D.reviewSetId,direction:S.direction,records:D.records.map(x=>({id:x.id,sha256:x.sha256,sourceSha256:x.sourceSha256,choice:S.records[x.id]?.choice||'unreviewed',note:S.records[x.id]?.note||''})),productionApproved:false,qqSendApproved:false};const url=URL.createObjectURL(new Blob([JSON.stringify(feedback,null,2)],{type:'application/json'})),a=e('a');a.href=url;a.download='方源_声线方向反馈.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)};draw();
+</script></html>
