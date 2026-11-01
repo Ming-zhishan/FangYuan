@@ -10,6 +10,9 @@ test('a close owner preference is explicit and confined to the verified private 
   assert.equal(interactionFrame({ ownerQQ: '100001' }, 'private:100001'), null)
   assert.equal(interactionFrame({ ...cfg, ownerQQ: '' }, 'private:'), null)
   assert.deepEqual(cfg.ext.conversation, { ownerBond: 'close_companion' })
+  const publicTrial = interactionFrame({ ...cfg, ext: { conversation: { affectTrial: true } } }, 'group:100002')
+  assert.deepEqual(publicTrial, { kind: 'affect_trial', source: 'explicit_configuration' })
+  assert.equal(Object.hasOwn(publicTrial, 'guidance'), false)
 })
 
 test('expired or consumed inputs cannot become another turn, and scopes never mix', () => {

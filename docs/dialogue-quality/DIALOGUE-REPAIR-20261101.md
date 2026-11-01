@@ -24,6 +24,8 @@
 
 `conversation/interaction-frame.mjs`提供显式配置`ext.conversation.ownerBond="close_companion"`：仅匹配配置ownerQQ的私聊路由，其他私聊及所有群聊均不携带这项私密偏好；不从聊天自称识别宿主。默认缺省不启用，不修改好感、记忆事实、工具权限或主动联系设置。组内既有抽象关系延续规则保持原样。新增情绪/接话策略属于待体验候选，不是已通过长期人格验收。
 
+新增表达规则放在`interaction-policy.txt`，仅显式ownerBond生效或`ext.conversation.affectTrial=true`时加入；两项默认都关闭。因此默认候选只启用完整输入/来源修复，保留原有表达政策。affectTrial可用于其他授权会话的情绪试验，但不携带宿主私聊的亲近偏好。拆出试验开关后，主路由A/B的完整prompt哈希仍命中已有缓存，未重新调用模型。
+
 ## 实际验证及限制
 
 - 新复现测试先在旧模块得到4项失败：上下文仅剩末问、复核缺前问；修复后通过。旧版失败是实际输入断言，不是把缺少新函数当缺陷。

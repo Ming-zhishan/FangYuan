@@ -40,8 +40,10 @@ if (!args.includes('--execute')) {
     const { conversationReviewPrompt } = await import(pathToFileURL(join(dir, 'conversation/index.mjs')))
     const { applyReviewDecision } = await import(pathToFileURL(join(dir, 'conversation/decision.mjs')))
     const core = readFileSync(join(dir, 'fangyuan/core.txt'), 'utf8').trim()
-    const social = readFileSync(join(dir, 'conversation/social-policy.txt'), 'utf8')
+    const socialBase = readFileSync(join(dir, 'conversation/social-policy.txt'), 'utf8')
     const interaction = variant === 'after' ? (await import(pathToFileURL(join(dir, 'conversation/interaction-frame.mjs')))).interactionFrame({ ownerQQ: '100001', ext: { conversation: { ownerBond: 'close_companion' } } }, 'private:100001') : null
+    const fragment = join(dir, 'conversation/interaction-policy.txt')
+    const social = interaction && existsSync(fragment) ? socialBase.trimEnd() + readFileSync(fragment, 'utf8') : socialBase
     for (const c of cases) {
       // hostTail is an explicit counterfactual fixture, never inferred from archive recency.
       const userText = variant === 'before' && typeof c.hostTail === 'string' ? c.hostTail : c.userText
