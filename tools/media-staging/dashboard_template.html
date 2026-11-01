@@ -26,18 +26,19 @@ audio{display:block;width:100%;margin:9px 0 16px}
 input,select,textarea{background:#101a27;color:#e5eef8;border:1px solid #4e657b;border-radius:8px;padding:10px;font:inherit}
 input[type=search]{width:min(100%,440px)}textarea{display:block;width:100%;height:80px;margin:10px 0;resize:vertical}
 .filters{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-.small{font-size:12px;color:#9facbd}
+.small{font-size:12px;color:#9facbd}.card[hidden]{display:none}.rating{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.rating button{font-size:12px;padding:6px 9px}.clip-note{width:100%;margin:8px 0;font-size:12px}.visual:has(img){border-bottom:1px solid #324559}
 @media(max-width:850px){.audio-panel{grid-template-columns:1fr}main{padding:14px}.lead{grid-template-columns:65px 1fr;gap:5px}}
 </style></head><body><header>
 <h1>方源 Bot｜表情包与语音研发工厂</h1>
 <div class="sub">独立研发 · 多快照增量去重 · 原图与语音研究实物 · 本地试听审核 · 不连接 QQ 生产</div>
 </header><main><div class="stats" id="stats"></div>
 <div class="msg"><b>工程声明：</b>此页所有文件均来自隔离研究目录。母图完整性和音频技术检测与“原作者授权、真人听感、正式部署”是三个不同的关口。任何预览或内部审核备注都不构成公开发布许可。此工作台不向服务器传输数据、不修改 Bot 配置。</div>
-<nav><button data-tab="meme" class="active">表情包母版</button><button data-tab="voice">新语音样本</button><button data-tab="trend">跨批次热榜候选</button><button id="export" style="margin-left:auto">导出审核备注</button></nav>
+<nav><button data-tab="meme" class="active">表情包母版</button><button data-tab="fidelity">真人母版保真准则</button><button data-tab="voice">原创语音试听与审核</button><button data-tab="trend">跨批次热榜候选</button><button id="export" style="margin-left:auto">导出本地审核记录</button></nav>
 <section class="active" id="meme"><h2>真实原始媒体（均保留原图）</h2><p class="sub">含旧研究的 8 份母版与新取得的 3 份原版参考。非人物原图不强行方源化；点击可查看原文件。</p><div class="grid" id="meme-grid"></div></section>
-<section id="voice"><h2>本地 F5 原创短句语音试听</h2><p class="sub">参考声线为用户声明许可下的私有实验素材。前三条为刚生成的 24kHz WAV。拼音一致性不等于逐字无误或真人音色合格。</p><div class="audio-panel" id="voice-grid"></div></section>
+<section id="fidelity"><h2>方源化真人梗图：只修改原脸局部，不重绘整张母版</h2><p class="sub">黄色轮廓是候选编辑范围，其余画面必须保留。这里展示的是原图审核辅助图，不是新生成的正式表情包；目前合格真人新编辑数量仍为零。</p><div class="grid" id="face-guides"></div></section>
+<section id="voice"><h2>本地 F5 原创短句语音试听</h2><p class="sub">每条可以按实际听感标记“喜欢 / 需重做 / 不采用”，并导出本地审听记录。ASR 拼音一致性、基频与技术检测都不能替代真人听感及原配音许可。</p><div class="filters"><input type="search" id="voice-search" placeholder="搜索台词或声音编号"/><select id="voice-scene"><option value="all">全部聊天场景</option></select><select id="voice-rating"><option value="all">所有试听状态</option><option value="unreviewed">未听审</option><option value="preferred">倾向保留</option><option value="redo">需要重做</option><option value="reject">不采用</option></select><span id="voice-count" class="small"></span></div><div class="audio-panel" id="voice-grid"></div></section>
 <section id="trend"><h2>跨两次采集的研究线索</h2><p class="sub">只把关键词和排名当作待查线索，不能把任意热点新闻强行转换成表情包。支持无上限导入；界面仅负责过滤和排序。</p><div class="filters"><input type="search" id="search" placeholder="搜索关键词、来源平台或标题"/><select id="priority"><option value="all">所有分类</option><option value="high">高优先梗候选</option><option value="background">其他研究线索</option><option value="sensitive_hold">敏感内容隔离</option></select><span id="count" class="small"></span></div><div class="leads" id="leads"></div></section>
-<div class="paper"><b>内部审核备注：</b>选中某条后可记录审美、原著人设、转录问题。点击导出后才保存至本机下载目录，绝不会自动导入生产。</div><textarea id="note" placeholder="例如：声音01听感偏机械；某张表情仍需找到原作者和许可；素材标签容易误触发..."></textarea>
+<div class="paper"><b>审核记录说明：</b>每条语音可保存独立的主观审听判断。导出的是私有研究意见，不代表授权核查、自动入库或 QQ 生产批准。所有数据留在本机，页面不会连接外部服务器。</div><textarea id="note" placeholder="例如：声音01听感偏机械；某张表情仍需找到原作者和许可；素材标签容易误触发..."></textarea>
 <footer class="small">生成时间 <span id="at"></span> · 研究材料仅限当前项目内部使用 · 核验与发布为独立流程</footer>
 </main><script type="application/json" id="data">__MEDIA_FACTORY_PAYLOAD__</script><script>
 'use strict';
@@ -59,17 +60,73 @@ for(const m of data.memelist){
  if(m.sourceUrl)b.append(link(m.sourceUrl,'查看来源说明'));
  c.append(b);by('meme-grid').append(c);
 }
-for(const x of data.voices){
- const card=n('article',undefined,'card'),body=n('div',undefined,'card-body');
- body.append(n('h3',x.id+' · '+x.text));body.append(n('span',x.technical?'音频技术检查通过':'技术异常','badge '+(x.technical?'':'warn')));
- body.append(n('span','待真人听审／待声线批准','badge warn'));
- const a=n('audio');a.controls=true;a.preload='metadata';a.src=x.file;body.append(a);
- body.append(n('div','Whisper 原文复核：'+x.recognized,'meta'));
- body.append(n('div','拼音序列吻合：'+Math.round(x.pinyin*100)+'% ／ 原始字形吻合：'+Math.round(x.rawChars*100)+'%','meta'));
- body.append(n('div','时长 '+x.duration+' 秒 · 采样率 '+x.sampleRate+' Hz · 峰值 '+x.peak+' · 削波 '+x.clipped,'meta'));
- body.append(n('div','SHA-256：'+x.sha256,'meta'));
- card.append(body);by('voice-grid').append(card);
+// Private browser-side listening decisions. Never change audio files or production state.
+const reviewKey='fangyuan_voice_listen_v4';
+let reviews={};
+try {const saved=JSON.parse(localStorage.getItem(reviewKey)||'{}');if(saved&&typeof saved==='object')reviews=saved;}catch{}
+function storeReviews(){try{localStorage.setItem(reviewKey,JSON.stringify(reviews))}catch{}}
+const ratingLabels={unreviewed:'尚未听审',preferred:'倾向保留',redo:'需要重新合成',reject:'不采用'};
+const ratings=[['preferred','👍 倾向保留'],['redo','🔁 需要重做'],['reject','✕ 不采用'],['unreviewed','清空判断']];
+const uniqueScenes=[...new Set(data.voices.map(x=>x.scene||'未分类'))].sort((a,b)=>a.localeCompare(b,'zh'));
+for(const scene of uniqueScenes){const opt=n('option',scene);opt.value=scene;by('voice-scene').append(opt)}
+for(const g of data.guides||[]){
+ const card=n('article',undefined,'card'),photo=n('div',undefined,'visual');
+ const anchor=link(g.preview,'');const img=n('img');img.src=g.preview;img.alt='原图待修改区域：'+g.id;img.loading='lazy';anchor.append(img);photo.append(anchor);
+ const body=n('div',undefined,'card-body');body.append(n('h3',g.id),n('span','仅区域标注，尚无改图','badge warn'));
+ body.append(n('div','必须保留：'+g.preserve.join('、'),'meta'));
+ body.append(n('div','只允许修改：'+g.changeOnly.join('、'),'meta'));
+ body.append(link(g.mask,'查看精确区域掩码'));
+ card.append(photo,body);by('face-guides').append(card);
 }
+function drawVoiceFilters(){
+ const q=by('voice-search').value.trim().toLowerCase(),scene=by('voice-scene').value,rating=by('voice-rating').value;
+ let count=0;for(const card of by('voice-grid').children){
+  const x=data.voices.find(v=>v.id===card.dataset.id);
+  const active=rating==='all'||(reviews[x.id]?.rating||'unreviewed')===rating;
+  const visible=active&&(scene==='all'||(x.scene||'未分类')===scene)&&(!q||(x.id+' '+x.text).toLowerCase().includes(q));
+  card.hidden=!visible;if(visible)count++;
+ }
+ by('voice-count').textContent=count+' / '+data.voices.length+' 条；已标记 '+Object.values(reviews).filter(x=>x.rating&&x.rating!=='unreviewed').length+' 条';
+}
+for(const x of data.voices){
+ const card=n('article',undefined,'card'),body=n('div',undefined,'card-body');card.dataset.id=x.id;
+ body.append(n('h3',x.id+' · '+x.text));
+ body.append(n('span',x.scene||'未分类','badge'));
+ body.append(n('span',x.technical?'波形技术合格':'技术异常','badge '+(x.technical?'':'warn')));
+ if(x.pinyin<.9)body.append(n('span','转录需复核','badge warn'));
+ const state=n('div','','meta');body.append(state);
+ const audio=n('audio');audio.controls=true;audio.preload='none';audio.src=x.file;body.append(audio);
+ body.append(n('div','Whisper 识别：'+x.recognized,'meta'));
+ body.append(n('div','拼音匹配：'+Math.round(x.pinyin*100)+'% · 字形匹配：'+Math.round(x.rawChars*100)+'%','meta'));
+ body.append(n('div','长度 '+x.duration+' 秒 · '+x.sampleRate+' Hz · 峰值 '+x.peak+' · 削波 '+x.clipped,'meta'));
+ if(x.pitch_delta!=null)body.append(n('div','基频中位数比参考相差 '+x.pitch_delta+' 个半音（仅声学代理指标）','meta'));
+ if(x.prosody_flags?.length)body.append(n('div','声学复核标志：'+x.prosody_flags.join('、'),'meta'));
+ const group=n('div',undefined,'rating');group.setAttribute('role','group');group.setAttribute('aria-label','审核 '+x.id);
+ const buttons=[];
+ const render=()=>{
+  const choice=reviews[x.id]?.rating||'unreviewed';
+  state.textContent='本地人工选择：'+ratingLabels[choice]+'（不代表版权或声线授权）';
+  buttons.forEach(([btn,value])=>btn.classList.toggle('active',choice===value))
+ };
+ for(const [rating,label] of ratings){
+  const btn=n('button',label);
+  btn.type='button';btn.addEventListener('click',()=>{
+   reviews[x.id]={...(reviews[x.id]||{}),sha256:x.sha256,rating,updatedAt:new Date().toISOString()};
+   storeReviews();render();drawVoiceFilters();
+  });group.append(btn);buttons.push([btn,rating]);
+ }
+ body.append(group);
+ const note=n('input');note.type='text';note.className='clip-note';note.placeholder='这条语音的听感、音色或断句问题';
+ note.value=reviews[x.id]?.note||'';
+ note.addEventListener('change',()=>{
+  reviews[x.id]={...(reviews[x.id]||{}),sha256:x.sha256,note:note.value.slice(0,300),updatedAt:new Date().toISOString()};
+  storeReviews();
+ });
+ body.append(note,n('div','SHA-256：'+x.sha256,'meta'));
+ render();card.append(body);by('voice-grid').append(card);
+}
+for(const id of ['voice-search','voice-scene','voice-rating'])by(id).addEventListener(id==='voice-search'?'input':'change',drawVoiceFilters);
+drawVoiceFilters();
 function drawLeads(){
  const q=by('search').value.trim().toLowerCase(),prio=by('priority').value;
  const rows=data.leads.filter(x=>(prio==='all'||x.priority===prio)&&(!q||(x.title+' '+x.platform).toLowerCase().includes(q)));
@@ -88,14 +145,15 @@ document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click
  document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b===btn));
 }));
 const initialTab=location.hash.slice(1);
-if(['meme','voice','trend'].includes(initialTab)){
+if(['meme','fidelity','voice','trend'].includes(initialTab)){
  const trigger=Array.from(document.querySelectorAll('[data-tab]')).find(b=>b.dataset.tab===initialTab);
  if(trigger)trigger.click();
 }
 by('export').addEventListener('click',()=>{
- const notes={generatedAt:new Date().toISOString(),type:'private_review_note_not_license',
-   note:by('note').value,productionReady:false,qqReady:false};
+ const notes={generatedAt:new Date().toISOString(),type:'private_listening_review_not_license',
+   note:by('note').value,voiceReviews:Object.entries(reviews).filter(([id,v])=>data.voices.some(x=>x.id===id&&x.sha256===v.sha256)).map(([id,v])=>({id,...v})),
+   sourceAudioCount:data.voices.length,productionReady:false,qqReady:false};
  const blob=new Blob([JSON.stringify(notes,null,2)],{type:'application/json'});
- const u=URL.createObjectURL(blob),a=n('a');a.href=u;a.download='FangYuan_媒体研发复核备注.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1200);
+ const u=URL.createObjectURL(blob),a=n('a');a.href=u;a.download='FangYuan_本地声音逐条听审记录.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1200);
 });
 </script></body></html>

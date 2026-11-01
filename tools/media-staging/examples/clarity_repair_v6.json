@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fy-clarity-v6-01a",
+    "scene": "日常回应",
+    "delivery": "沉稳",
+    "text": "我在听，你把事情的来龙去脉说清楚。",
+    "originalText": true,
+    "repairOf": "fy-scene-v3-01"
+  },
+  {
+    "id": "fy-clarity-v6-01b",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "继续说，你还没讲到最关键的地方。",
+    "originalText": true,
+    "repairOf": "fy-scene-v3-01"
+  },
+  {
+    "id": "fy-clarity-v6-01c",
+    "scene": "日常回应",
+    "delivery": "克制",
+    "text": "既然开口了，就把事情从头说清楚。",
+    "originalText": true,
+    "repairOf": "fy-scene-v3-01"
+  }
+]

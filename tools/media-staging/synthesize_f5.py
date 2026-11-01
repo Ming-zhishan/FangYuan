@@ -70,7 +70,10 @@ def synthesise(*,reference:Path,ref_sha:str,ref_text:str,script:Path,out:Path,
             if rate<24000 or duration<.3 or duration>60 or rms<.01 or clipping>0:
                 raise RuntimeError('Generated sample failed waveform checks: '+row['id'])
             results.append({
-                'id':row['id'],'text':row['text'],'file':output.name,'sha256':sha(output),
+                'id':row['id'],'text':row['text'],'scene':str(row.get('scene',''))[:40],
+                'delivery':str(row.get('delivery',''))[:30],
+                'original_text':bool(row.get('originalText',False)),
+                'file':output.name,'sha256':sha(output),
                 'duration_s':round(duration,3),'sample_rate':rate,
                 'original_peak':round(old_peak,5),'output_peak':round(float(np.max(np.abs(decoded))),5),
                 'rms':round(rms,5),'gain':round(gain,5),'clipped':clipping,

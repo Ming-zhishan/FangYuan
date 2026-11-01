@@ -8,7 +8,7 @@ import argparse, hashlib, json, sqlite3, datetime
 
 def sha(f):return hashlib.sha256(f.read_bytes()).hexdigest()
 def read(f):return json.loads(f.read_text(encoding='utf-8-sig'))
-def assemble(*,factory_dir,shadow_dir,voice_lab,template,outdir,extra_voice_lab=None):
+def assemble(*,factory_dir,shadow_dir,voice_lab,template,outdir,extra_voice_lab=None,face_guides=None,prosody_report=None):
     if outdir.exists():raise ValueError('output exists; refuse overwrite')
     owner=read(outdir.parent/'.fangyuan-media-staging-root.json')
     if owner.get('purpose')!='isolated-fangyuan-media-staging' or owner.get('allowNewChildren')!=True:
@@ -69,29 +69,53 @@ def assemble(*,factory_dir,shadow_dir,voice_lab,template,outdir,extra_voice_lab=
            'technical':qa['audio']['technical_pass'],'duration':qa['audio']['duration_s'],
            'sampleRate':qa['audio']['sample_rate'],'clipped':qa['audio']['clipped_samples'],
            'peak':qa['audio']['peak'],'sha256':item['sha256'],
-           'qqReady':False
+           'scene':'未分类','delivery':'','qqReady':False
         })
-    if extra_voice_lab is not None:
-        newer=read(extra_voice_lab/'VOICE_FACTORY_FINAL.json')
-        check=read(extra_voice_lab/'VOICE_ASR_FACTORY_FINAL.json')
+    for lab in (extra_voice_lab or []):
+        newer=read(lab/'VOICE_FACTORY_FINAL.json')
+        check=read(lab/'VOICE_ASR_FACTORY_FINAL.json')
         reviewed={r['id']:r for r in check['records']}
         for item in newer['samples']:
-            wav=extra_voice_lab/item['file']
+            wav=lab/item['file']
             if not wav.is_file() or sha(wav)!=item['sha256']:
                 raise ValueError('Additional voice WAV fingerprint failed')
-            if item['id'] not in reviewed:raise ValueError('Missing second-batch ASR')
+            if item['id'] not in reviewed:raise ValueError('Missing extra-batch ASR')
             qa=reviewed[item['id']]
             voices.append({'id':item['id'],'file':wav.resolve().as_uri(),'text':item['text'],
                 'recognized':qa['recognized'],'pinyin':qa['pinyin_similarity'],
                 'rawChars':qa['raw_character_similarity'],'technical':item['clipped']==0 and item['rms']>0.01,
                 'duration':item['duration_s'],'sampleRate':item['sample_rate'],'clipped':item['clipped'],
-                'peak':item['output_peak'],'sha256':item['sha256'],'qqReady':False})
+                'peak':item['output_peak'],'sha256':item['sha256'],
+                'scene':item.get('scene','未分类'),'delivery':item.get('delivery',''),
+                'qqReady':False})
     if len(set(x['id'] for x in voices))!=len(voices):raise ValueError('Duplicate voice IDs')
+    if prosody_report is not None:
+        prosody=read(prosody_report)
+        by_prosody={x['id']:x for x in prosody['samples']}
+        if set(by_prosody)!=set(x['id'] for x in voices):
+            raise ValueError('Prosody rows do not match selected voice samples')
+        for v in voices:
+            row=by_prosody[v['id']]
+            if row['sha256']!=v['sha256']:raise ValueError('Prosody sample hash mismatch')
+            v['pitch_delta']=row['median_pitch_shift_semitones_vs_reference']
+            v['prosody_flags']=row['review_flags']
+    guides=[]
+    if face_guides is not None:
+        evidence=read(face_guides/'FACE_EDIT_GUIDES_FINAL.json')
+        for item in evidence['items']:
+            guide=Path(item['guidance'])
+            if not guide.is_file():raise ValueError('Missing ROI guide')
+            mask=Path(item['mask'])
+            if not mask.is_file():raise ValueError('Missing ROI mask')
+            guides.append({'id':item['id'],'preview':guide.resolve().as_uri(),
+                'mask':mask.resolve().as_uri(),'sourceSha256':item['baselineSha256'],
+                'preserve':item['preserve'],'changeOnly':item['change_only'],
+                'editedCompleted':False,'rightsVerified':False})
     template_text=template.read_text(encoding='utf8')
     if template_text.count('__MEDIA_FACTORY_PAYLOAD__')!=1:raise ValueError('Unexpected template')
     payload={
        'createdAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),
-       'stats':factory['stats'],'leads':leads,'memelist':memelist,'voices':voices,
+       'stats':factory['stats'],'leads':leads,'memelist':memelist,'voices':voices,'guides':guides,
        'allAssetsResearchOnly':True,'qqReady':False
     }
     body=json.dumps(payload,ensure_ascii=False,separators=(',',':')).replace('<','\\u003c').replace('>','\\u003e').replace('&','\\u0026')
@@ -116,6 +140,8 @@ def assemble(*,factory_dir,shadow_dir,voice_lab,template,outdir,extra_voice_lab=
 if __name__=='__main__':
   p=argparse.ArgumentParser()
   for x in ['factory-dir','shadow-dir','voice-lab','template','outdir']:p.add_argument('--'+x,required=True,type=Path)
-  p.add_argument('--extra-voice-lab',type=Path)
+  p.add_argument('--extra-voice-lab',type=Path,action='append')
+  p.add_argument('--face-guides',type=Path)
+  p.add_argument('--prosody-report',type=Path)
   d=vars(p.parse_args())
   print(json.dumps(assemble(**{x.replace('-','_'):value for x,value in d.items()}),ensure_ascii=False,indent=2))

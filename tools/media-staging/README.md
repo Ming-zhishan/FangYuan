@@ -99,3 +99,23 @@ Isolated TJ evidence from 2026-11-01: independent fresh nine-platform crawl succ
 - With the existing media semantic selector loaded read-only, the TJ real-data evaluation matched all six focused fixtures: disbelief, amusement, leaving, absurdity, emergency seriousness, and irrelevant novel discussion. The emergency and unrelated messages must not trigger image reactions.
 - The separate private OneBot WAV envelope test ran the existing qq_voice_media_adapter.recordSegment function without any network or QQ action. All six new F5 WAV files round-tripped through base64 record encoding with identical SHA-256. readyForVoiceAsset correctly remained false for every unreviewed sample.
 - Neither of these tests proves a person actually received or liked an image/voice message, and all copyright/speaker/consent checks remain separate production gates.
+
+## Stage 6 — One-click review, targeted speech repair and 37/37 media preflight (2026-11-01)
+
+**Only current user review entry:** private `<PRIVATE_MEDIA_RESEARCH_ROOT>\START_HERE.cmd`, which opens the stable `CURRENT_REVIEW.html` alias. The HTML must be promoted only by `publish_review_entry.py` *after* real browser DOM, click and export/import test evidence pass. The file alias remains stable between versions so the user is not forced to discover or bookmark V1/V2/V3/V4.
+
+- `make_acceptance_entry.py` + `acceptance_entry_template.html` render the comparison from private SHA-verified input records; four prioritized discussion groups, two default audio choices per group, extra versions available on demand, remaining 20 base clips folded away, and two actual originals with ROI guides. UI preference buttons only record the **human subjective listening choice**, not copyright or QQ approval.
+- `publish_review_entry.py` validates all three browser test records and immutable input manifest, then atomically promotes the HTML to the stable private alias. `verify_current_review.py` re-opens the actual alias in headless Microsoft Edge and validates rendered DOM and source fingerprint.
+- `import_human_reviews.py` verifies user-exported preferences by source SHA-256 and group membership, rejects stale/tampered/duplicated data, never treats a subjective preference as speaker authorization or publication consent. 9 unit tests passed.
+- `face_edit_fidelity.py` + `examples/face_edit_targets_v1.json` prepare two exact real-original edit masks and reject image candidates if they alter substantial areas outside the allowed ROI or don't change the ROI at all. 6 synthetic image-scope tests passed. **No high-fidelity Fang Yuan face edits have been created yet**; ROI guides are not new memes.
+- `examples/scene_lines_v3.json` supplies 18 original daily chat lines; `examples/retakes_v4.json` contains six alternative takes; `examples/semantic_repairs_v5.json` contains four meaningful rewrites; `examples/clarity_repair_v6.json` contains three longer and clearer alternative responses for a problematic short clip. Do not mislabel changed texts as the *exact same utterance*.
+- `build_voice_pack_index.py` verifies all 37 F5-produced PCM WAVs with SHA-256, 24-kHz/mono/PCM16 format, peak, RMS, clipping and independent offline ASR metadata. Real evidence: 37/37 waveform pass; 33/37 pinyin-similarity >= 0.90, with all four low items from earlier ultra-short one-liners in group 01. Three *new* longer group-01 lines all match pinyin; this is not subjective perceptual validation.
+- `verify_onebot_voicepack.mjs` runs the existing `qq_voice_media_adapter.mjs` offline for all 37 records, checks media format and base64 integrity, keeps every unreviewed rights gate closed, and emits no QQ messages. Real result: 37/37 passed.
+- Git branch code is safe to share; **private media recordings, originals, audited local results and personalized Windows paths do not belong in the public repository.**
+
+### Exact user workflow
+
+1. On TJ, double-click `START_HERE.cmd` once. It opens `CURRENT_REVIEW.html` in the default browser, showing four listening groups with eight initially visible comparison audio players.
+2. Play and choose a preferred voice or “都不满意”. You may skip groups. You do **not** need to read test logs, know model parameters, review all 37 tracks, or perform `git pull` just to open the page.
+3. Click `导出审核结果 JSON`, send the downloaded file to ChatGPT. The importer validates all selected source audio SHA-256 and uses the choices as R&D feedback only. Explicit production authorization remains separate.
+4. Don't review unfinished edited images: the two originals displayed are unchanged, and the yellow ROI boundaries are only production guidance. Original-creator reuse rights and named voice rights must be checked before distribution.

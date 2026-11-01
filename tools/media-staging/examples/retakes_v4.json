@@ -1,0 +1,50 @@
+[
+  {
+    "id": "fy-retake-v4-01a",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "嗯，我在。你接着说。",
+    "originalText": true,
+    "retakeOf": "fy-scene-v3-01"
+  },
+  {
+    "id": "fy-retake-v4-01b",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "嗯，我听着，你接着说。",
+    "originalText": true,
+    "retakeOf": "fy-scene-v3-01"
+  },
+  {
+    "id": "fy-retake-v4-02a",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "你的意思，我大概明白了。",
+    "originalText": true,
+    "retakeOf": "fy-scene-v3-02"
+  },
+  {
+    "id": "fy-retake-v4-02b",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "你的意思，我已经明白了。",
+    "originalText": true,
+    "retakeOf": "fy-scene-v3-02"
+  },
+  {
+    "id": "fy-retake-v4-06a",
+    "scene": "网络梗",
+    "delivery": "戏谑",
+    "text": "这牌没有问题，人有问题。",
+    "originalText": true,
+    "retakeOf": "fy-scene-v3-06"
+  },
+  {
+    "id": "fy-retake-v4-07a",
+    "scene": "策略",
+    "delivery": "冷静",
+    "text": "先把底牌摸清楚，再谈下一步。",
+    "originalText": true,
+    "retakeOf": "fy-scene-v3-07"
+  }
+]

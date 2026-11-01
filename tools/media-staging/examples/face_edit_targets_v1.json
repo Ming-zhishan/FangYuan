@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "targets": [
+    {
+      "id": "jiahao-rain-campus",
+      "source_file": "jiahao_reference.jpg",
+      "expected_size": [1279, 719],
+      "editable_zone": [[469, 154], [492, 113], [548, 95], [628, 101], [666, 139], [679, 189], [661, 253], [573, 271], [490, 266], [458, 213]],
+      "preserve": ["wet campus and yellow ground stripe", "original crouched perspective", "black hoodie and chest logo", "black face mask and embroidery", "foreground hand gesture", "original framing and body posture"],
+      "change_only": ["visible bangs", "eyebrow angle", "eye expression", "very limited visible skin details"],
+      "warning": "Photorealistic identity/rights not verified. Never public publish as an original Fang Yuan scene."
+    },
+    {
+      "id": "question-reaction",
+      "source_file": "classic_question_person_reference.jpg",
+      "expected_size": [268, 246],
+      "editable_zone": [[83, 93], [107, 76], [150, 78], [188, 95], [204, 127], [205, 189], [172, 217], [117, 217], [79, 187], [70, 145]],
+      "preserve": ["all question mark positions, sizes and visible count", "backward baseball cap", "original side-looking facial expression and head tilt", "black hoodie", "white background", "high-recognition reaction composition"],
+      "change_only": ["small facial identity cues without changing mouth shape or distinctive expression"],
+      "warning": "This meme contains a recognizably real person; require image rights and human visual audit before distribution."
+    }
+  ],
+  "review_rule": "Only the editable zone may change. Unrelated redraws or new anime characters fail. This file defines QA geometry, not authorization to publish."
+}

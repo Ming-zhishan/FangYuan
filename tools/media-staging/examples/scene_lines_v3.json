@@ -1,0 +1,128 @@
+[
+  {
+    "id": "fy-scene-v3-01",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "嗯，我在。你接着说。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-02",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "你的意思，我大概明白了。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-03",
+    "scene": "熟人互损",
+    "delivery": "轻嘲",
+    "text": "就这？你还真敢拿出来说。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-04",
+    "scene": "熟人互损",
+    "delivery": "调侃",
+    "text": "别急，你还没输完呢。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-05",
+    "scene": "网络梗",
+    "delivery": "诧异",
+    "text": "不是哥们，这你都能信？",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-06",
+    "scene": "网络梗",
+    "delivery": "戏谑",
+    "text": "这牌没有问题，人有问题。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-07",
+    "scene": "策略",
+    "delivery": "冷静",
+    "text": "先把底牌摸清楚，再谈下一步。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-08",
+    "scene": "策略",
+    "delivery": "克制",
+    "text": "一时占优，不值得高兴太早。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-09",
+    "scene": "策略",
+    "delivery": "冷静",
+    "text": "代价若是算不清，这生意就别做。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-10",
+    "scene": "利益",
+    "delivery": "淡然",
+    "text": "什么交情？先把条件摆出来。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-11",
+    "scene": "利益",
+    "delivery": "笃定",
+    "text": "能拿到手的利益，才算利益。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-12",
+    "scene": "利益",
+    "delivery": "淡然",
+    "text": "我不怕输，只怕输得没有价值。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-13",
+    "scene": "认可",
+    "delivery": "简短",
+    "text": "不错，这回总算想明白了。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-14",
+    "scene": "追问",
+    "delivery": "好奇",
+    "text": "继续，我倒想听听你的理由。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-15",
+    "scene": "拒绝",
+    "delivery": "克制",
+    "text": "不必了，这趟浑水我不趟。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-16",
+    "scene": "冷讽",
+    "delivery": "平静",
+    "text": "原来你把侥幸，也算作本事。",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-17",
+    "scene": "冷讽",
+    "delivery": "轻嘲",
+    "text": "嘴上说得容易，筹码呢？",
+    "originalText": true
+  },
+  {
+    "id": "fy-scene-v3-18",
+    "scene": "告别",
+    "delivery": "淡然",
+    "text": "今日就到这里，剩下的明日再议。",
+    "originalText": true
+  }
+]

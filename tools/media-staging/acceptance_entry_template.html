@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>方源媒体 · 一页验收</title>
+<style>
+:root{color-scheme:dark;font:14px/1.65 "Microsoft YaHei",system-ui,sans-serif;color:#eaf2fb;background:#101723}
+*{box-sizing:border-box}body{margin:0}
+header{padding:25px max(20px,calc((100vw - 1160px)/2));background:linear-gradient(115deg,#1c3543,#151f31);border-bottom:1px solid #465469}
+main{max-width:1200px;margin:0 auto;padding:19px 22px 70px}
+h1{margin:0 0 7px;font-size:26px}h2{font-size:19px;margin:20px 0 8px}h3{font-size:16px;margin:0 0 8px}
+p{margin:7px 0}.sub,.muted{color:#b4c5d6}.sub{font-size:13px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin:13px 0 23px}
+.metric{padding:13px;background:#192637;border:1px solid #35485b;border-radius:11px}
+.metric strong{display:block;font-size:25px}.metric small{color:#a2b7c9}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px;margin:15px 0}
+.step{border:1px solid #3c5268;border-radius:12px;padding:15px;background:#1d2b3c}
+.step strong{font-size:15px;display:block}.step p{font-size:12px;color:#b3c7d9}
+.card{border:1px solid #3e5063;background:#1c293a;border-radius:12px;padding:15px;margin:14px 0}
+.tag{display:inline-block;border:1px solid #496778;border-radius:99px;padding:2px 10px;font-size:11px;color:#bbdaec;margin-right:7px}
+.tag.todo{border-color:#836345;background:#392a22;color:#f5d1a9}
+button{font:inherit;background:#20354b;color:#f1f6ff;border:1px solid #5a7791;border-radius:9px;padding:9px 14px;cursor:pointer}
+button:hover{background:#2d4961}button.active{background:#326c7e;border-color:#82c6d0}
+button:focus-visible,input:focus-visible{outline:2px solid #a4cdea;outline-offset:2px}
+button.primary{background:#286f78;border-color:#91bac2;font-weight:600}
+input[type=text]{padding:8px;width:100%;background:#101b29;color:#edf3fa;border:1px solid #566a7c;border-radius:8px;font:inherit}
+audio{width:100%;display:block;margin:9px 0}
+.compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin:12px 0}
+.option{border:1px solid #3b5267;padding:12px;background:#152436;border-radius:10px;min-width:0}
+.option.selected{border-color:#75b9c6;background:#1d3c4a}
+.option-title{font-weight:600}.tiny{font-size:12px;color:#a9bece;word-break:break-all}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.group-status{color:#b8d5e2;font-weight:600;margin-top:12px}
+.progress{padding:11px 14px;border:1px solid #445e71;border-radius:10px;background:#1b3042;margin:13px 0}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:15px}
+.photo-grid figure{margin:0;background:#142131;padding:12px;border-radius:10px}
+.photo-grid img{width:100%;max-height:250px;object-fit:contain;display:block;background:#090f18;border-radius:7px}
+.photo-grid figcaption{color:#bfd0dd;font-size:12px;margin-top:8px}
+#downloads{position:sticky;bottom:0;padding:12px;border:1px solid #567588;border-radius:11px;background:#193746;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:20px 0}
+#downloads p{font-size:12px;margin:0;flex:1;min-width:230px}
+.other-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:11px}
+.small-card{padding:13px;background:#192638;border:1px solid #3b5168;border-radius:9px}
+details{margin:18px 0;border-top:1px solid #485365;padding-top:12px}
+summary{font-weight:600;cursor:pointer}a{color:#a9d7ed}a:hover{text-decoration:underline}
+hr{border:0;border-top:1px solid #465365;margin:25px 0}
+footer{font-size:12px;color:#9fb1bf;margin-top:25px}
+@media(max-width:600px){header{padding:22px}main{padding:14px}.compare{grid-template-columns:1fr}.photo-grid{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>方源 Bot · 一页验收</h1><p class="sub">只让你判断必须听才知道的声音效果。其余代码、数据、音频指标和文件隔离由我负责，不让你手动核查工程。</p></header>
+<main>
+<div id="summary" class="summary"></div>
+<h2>你需要做什么？只需三步</h2>
+<div class="steps">
+ <div class="step"><strong>① 听下面四组重点语音</strong><p>每组听原版和返工版，选择更喜欢的一条，或者“都不满意”。不需要懂任何技术指标。</p></div>
+ <div class="step"><strong>② 根据真实听感点击选择</strong><p>判断是否自然、是否有目标声线感觉、语调是否合适。你暂时不想判断的组可跳过。</p></div>
+ <div class="step"><strong>③ 导出反馈文件并发到本聊天</strong><p>点击页面底部“导出审核结果”，把生成的 JSON 拖回 ChatGPT。我据此继续定向返工；没做选择不会被视为通过。</p></div>
+</div>
+<div class="progress" id="progress"></div>
+<h2>第一部分：四组必须优先对比的语音</h2>
+<p class="sub">机器转录在这些短句上存在漏字、同音词或分句争议。请只看台词和听感，不必按机器分数给它打分。</p>
+<div id="focus"></div>
+<details id="other"><summary>展开：其余 20 条语音（可选试听，不要求现在全部检查）</summary><p class="sub">目前这部分有自动检测结果，但没有将任何一条自动批准为成品。</p><div id="other-list" class="other-grid"></div></details>
+<hr>
+<h2>第二部分：真人梗图进度（目前你不需要验收）</h2>
+<p>真正的“方源化”图片**还没有**完成可靠原图保真制作。下面展示的是已核实母版与黄色允许编辑区域，方便你了解为什么没有把先前的虚构概念图当作成品。</p>
+<div id="faces" class="photo-grid"></div>
+<div class="card"><span class="tag todo">仍未完成</span><strong>表情包上线与最终审核</strong>
+<p class="sub">现有 11 份真实原图/GIF 与原梗来源档案，但合格高保真真人改图为零。后续真正做出编辑候选之后再让你一键比较原图和改图。目前不需要你为不存在的成品点通过。</p></div>
+<hr>
+<h2>第三部分：我的验收责任，不转交给你</h2>
+<div class="card">
+<p><span class="tag">已自动完成</span> 24 条基础语音的波形、峰值、停顿及音频文件完整性检查；6 条返工版的独立转录。既有采集与增量表情包研究流水线另有回归证据。</p>
+<p><span class="tag todo">仍未完成</span> 真人高保真新表情、主观声音质量最终确认、逐项原作者/声线授权证据及 QQ 真实私聊交付。不把这几项写成已通过。</p>
+<p><span class="tag">生产隔离</span> 这个页面只读已有研究媒体，没有连接 QQ、付费 API 或生产数据库；你的反馈只保存在浏览器本地并在主动导出时生成文件。</p>
+</div>
+<div id="downloads">
+ <p><strong id="remaining">你尚未对任何一组作出选择。</strong> 可以随时导出部分结果，剩下的继续由我先优化。</p>
+ <button id="export" class="primary" type="button">导出审核结果 JSON</button>
+ <button id="clear" type="button">清空这次的本地选择</button>
+</div>
+<footer>所有试听仅限既有研究样本、非生产使用；“喜欢”只是声音审美意见，绝不自动授权公开发布或调用 QQ。</footer>
+</main>
+<script id="review-data" type="application/json">__DATA__</script>
+<script>
+'use strict';
+const D=JSON.parse(document.getElementById('review-data').textContent);
+const el=id=>document.getElementById(id);
+const E=(tag,text,cls)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=String(text);if(cls)node.className=cls;return node};
+const stateKey='FangYuan_review_20261101_v1';
+let state={};
+try{const s=JSON.parse(localStorage.getItem(stateKey)||'{}');if(s&&typeof s==='object'&&!Array.isArray(s))state=s}catch{}
+function save(){try{localStorage.setItem(stateKey,JSON.stringify(state))}catch{};progress()}
+function stats(label,value){const div=E('div',undefined,'metric');div.append(E('small',label),E('strong',value));el('summary').append(div)}
+stats('可试听研究语音',D.counts.samples+D.counts.retakes);
+stats('自动技术检查通过',D.counts.technicalBasePass+' / '+D.counts.samples);
+stats('重点对比组',D.focusGroups.length);
+stats('合格高保真真人改图',D.counts.highFidelityEditedMemes);
+function progress(){const decided=D.focusGroups.filter(g=>state[g.id]?.chosen).length;el('progress').textContent='重点四组已判断 '+decided+' / '+D.focusGroups.length+'；未判断的自动保留为待审核，不会被当作通过。';el('remaining').textContent=decided?'已完成 '+decided+' 组选择，现可导出反馈。':'你尚未对任何一组作出选择。'}
+function renderGroup(group){
+ const outer=E('article',undefined,'card');outer.dataset.id=group.id;
+ outer.append(E('h3',group.name));
+ outer.append(E('span','人工试听优先','tag todo'));
+ const options=E('div',undefined,'compare');
+ const msg=E('div',undefined,'group-status');
+ const actions=E('div',undefined,'actions');
+ const buttons=[];
+ for(const [i,x] of group.candidates.entries()){
+  const option=E('div',undefined,'option');option.dataset.optionId=x.id;
+  option.append(E('div',i===0?'原版':'返工候选 '+i,'option-title'));
+  option.append(E('div',x.name,'sub'));
+  const audio=E('audio');audio.src=x.file;audio.controls=true;audio.preload='none';
+  option.append(audio);
+  option.append(E('div','编号：'+x.id,'tiny'));
+  const button=E('button','选择这一条声音');button.type='button';button.addEventListener('click',()=>choose(x.id));
+  option.append(button);buttons.push([option,button,x.id]);options.append(option);
+ }
+ outer.append(options);
+ // Keep the first listen simple: original vs the most clearly recognized new alternative.
+ const baseline=group.candidates[0];
+ const scored=group.candidates.slice(1).sort((a,b)=>
+   (b.score-a.score)||Number(b.id.includes('repair'))-Number(a.id.includes('repair')));
+ const suggested=scored[0];
+ let expanded=false;
+ const extra=E('button','展开其他 '+Math.max(0,group.candidates.length-2)+' 个备选声音');
+ extra.type='button';
+ extra.addEventListener('click',()=>{expanded=!expanded;refreshVisibility()});
+ const tip=E('div','先听原版和一个新候选；其余版本可以展开，不需要全部听。机器推荐只参考转录可懂度，不代表音色更像。','tiny');
+ outer.append(tip,extra);
+ function refreshVisibility(){
+   const picked=state[group.id]?.chosen||'';
+   for(const [element,button,id] of buttons){
+     element.hidden=!(expanded||id===baseline.id||id===suggested.id||id===picked);
+   }
+   extra.textContent=expanded?'收起其他版本':'展开其他 '+Math.max(0,group.candidates.length-2)+' 个备选声音';
+ }
+ refreshVisibility();
+ const none=E('button','都不满意，需要继续返工');
+ none.type='button';none.addEventListener('click',()=>choose('none'));
+ const undecided=E('button','先不判断');
+ undecided.type='button';undecided.addEventListener('click',()=>choose(''));
+ actions.append(none,undecided);outer.append(actions,msg);
+ const note=E('input');note.type='text';note.placeholder='可选：说说哪里不像、哪里生硬、哪里不自然';
+ note.value=state[group.id]?.note||'';
+ note.addEventListener('change',()=>{state[group.id]={...(state[group.id]||{}),note:note.value.slice(0,400)};save()});
+ outer.append(E('p','你的感受（可不填）：','tiny'),note);
+ function choose(value){
+  state[group.id]={...(state[group.id]||{}),chosen:value,updatedAt:new Date().toISOString()};
+  save();draw();
+ }
+ function draw(){
+  const x=state[group.id]?.chosen||'';
+  for(const [item,btn,id] of buttons){item.classList.toggle('selected',x===id);btn.classList.toggle('active',x===id)}
+  none.classList.toggle('active',x==='none');
+  msg.textContent=x==='none'?'已标记：所有版本都不满意。':x?'已选：'+x:'待审核：你尚未作出判断。';
+ }
+ draw();
+ el('focus').append(outer);
+}
+D.focusGroups.forEach(renderGroup);
+for(const x of D.otherSamples){
+ const card=E('article',undefined,'small-card');
+ card.append(E('strong',x.scene+' · '+x.name));
+ const a=E('audio');a.src=x.file;a.controls=true;a.preload='none';card.append(a);
+ card.append(E('div','编号：'+x.id,'tiny'));
+ el('other-list').append(card);
+}
+for(const x of D.images){
+ const card=E('figure');
+ card.append(E('h3',x.id==='jiahao-rain-campus'?'嘉豪校园｜原图与局部编辑边界':'经典问号｜原图与局部编辑边界'));
+ for(const [name,file] of [['真实原始母版',x.original],['黄色编辑区域（不是成品）',x.guide]]){
+  const link=E('a');link.href=file;link.target='_blank';link.rel='noopener noreferrer';
+  const image=E('img');image.src=file;image.loading='lazy';image.alt=name;link.append(image);card.append(link,E('figcaption',name));
+ }
+ el('faces').append(card);
+}
+el('export').addEventListener('click',()=>{
+ const results=D.focusGroups.map(g=>({group:g.id,
+    chosen:state[g.id]?.chosen||'unreviewed',note:state[g.id]?.note||'',
+    candidates:g.candidates.map(x=>({id:x.id,sha256:x.sha256}))}));
+ const content={schema:1,purpose:'human_voice_preference_only',generatedAt:new Date().toISOString(),
+   decisions:results,declaredSourceCount:D.counts.samples+D.counts.retakes,
+   humanCopyrightConsentVerified:false,productionApproved:false,qqSendApproved:false};
+ const blob=new Blob([JSON.stringify(content,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=E('a');a.href=url;a.download='方源_语音四组听感反馈.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+el('clear').addEventListener('click',()=>{
+ const yes=confirm('只清除这个浏览器的试听选择，不会删除任何声音文件。确定？');
+ if(!yes)return;state={};save();window.location.reload();
+});
+progress();
+</script></body></html>

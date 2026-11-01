@@ -1,0 +1,34 @@
+[
+  {
+    "id": "fy-repair-v5-01",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "我听着，你继续说。",
+    "originalText": true,
+    "repairOf": "fy-scene-v3-01"
+  },
+  {
+    "id": "fy-repair-v5-02",
+    "scene": "日常回应",
+    "delivery": "平静",
+    "text": "我明白你的意思，你继续。",
+    "originalText": true,
+    "repairOf": "fy-scene-v3-02"
+  },
+  {
+    "id": "fy-repair-v5-06",
+    "scene": "网络梗",
+    "delivery": "戏谑",
+    "text": "问题不在牌上，在人。",
+    "originalText": true,
+    "repairOf": "fy-scene-v3-06"
+  },
+  {
+    "id": "fy-repair-v5-07",
+    "scene": "策略",
+    "delivery": "冷静",
+    "text": "先弄清手里的牌，再决定怎么办。",
+    "originalText": true,
+    "repairOf": "fy-scene-v3-07"
+  }
+]
