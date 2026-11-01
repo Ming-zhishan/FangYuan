@@ -48,3 +48,24 @@ Deployment and code merge are separate decisions. Opening or merging a PR will n
 ## Tests
 
 `stage.test.mjs` uses fake data and isolated temporary fixtures. It checks candidate deduplication, fingerprinting, disabled rights/publish flags, non-overwriting output, source/output overlap, corrupted or missing audio, duplicate IDs, path traversal, malformed trend data, and incomplete arguments. The real-data smoke test writes only to a private audit directory that must **not** be uploaded to a public repository.
+
+## Stage 2: Evidence-based private review queue
+
+The review command operates on the **existing Stage 1 results** and the same research root, writing a **new task-owned directory**. It is an offline triage and evidence template only, not a deployer.
+
+```powershell
+node --test tools/media-staging/stage.test.mjs tools/media-staging/review.test.mjs
+node tools/media-staging/review.mjs --media-root "<MEDIA_RESEARCH_ROOT>" --stage-1 "<STAGE_1_OUTPUT_DIRECTORY>" --out "<NEW_STAGE_2_REVIEW_DIRECTORY>"
+```
+
+The output parent must already contain the same task-owned `.fangyuan-media-staging-root.json` marker described above. The destination must not exist; source research and Stage 1 input are read-only. If Stage 1 source fingerprints no longer match the source research, stop and repeat Stage 1 in an isolated new directory rather than overwriting anyone else's data.
+
+Stage 2 generates `review_queue.json` with **unapproved** meme and voice tickets, plus `review_decisions_TEMPLATE.json` with **blank human decision fields**. The queue contains recording hashes, ASR status, segment-count comparisons, and cross-model Chinese-transcription similarity where available; the original transcript itself is deliberately not copied into the shareable template. Use the original private research files for manual audio listening and source verification.
+
+ASR review triage is heuristic: **high** when similarity < 0.50, the two segment counts differ by a ratio of at least 1.50, or a model/status check is anomalous; **medium** for weaker differences (including similarity < 0.85); otherwise **normal**. These are *review scheduling priorities*, never transcription accuracy, speaker attribution, or permission approvals. Every source still requires independent human review.
+
+`evaluateReview(ticket, decision)` validates that a proposed editorial review carries an identified reviewer, timestamp and the relevant *references* (original-image hash and source context/rights for memes; speaker, transcript, listening, usage rights for voice). Even a fully completed and validated **mock** decision yields only `evidence_submitted_for_separate_review`; it can **never** set `productionReady` or `qqReady` to true. An evidence reference is not automatically proof that a license was issued or that human review really occurred.
+
+**Editorial approval is not deployment authorization.** Another authorized integrator must separately validate original artifacts and permission scope, approve the specific release batch, check QQ identity/permissions, back up production, run staged tests, and record the real recipient-side result before any release. Current group-disabled and zero-media-auto policies remain unchanged.
+
+`review.test.mjs` uses synthetic isolated fixtures to test review prioritization, source SHA-256 binding, ASR tampering, concurrent source changes, rejection/evidence gates, blank templates, and output ownership. No research data, production files, QQ messages, or paid model calls are needed.
