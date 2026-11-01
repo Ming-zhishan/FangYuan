@@ -7,6 +7,12 @@ test('current batch identifies the new speaker without re-enqueueing an older ph
   const b=currentBatch(rows,'你又乱搞')
   assert.deepEqual(b.sourceIds,['now']);assert.deepEqual(b.senderUids,['222222'])
 })
+
+test('an old short answer inside a new sentence does not become a current speaker',()=>{
+  const rows=[{id:'old',role:'user',uid:'100001',text:'好'},{id:'now',role:'user',uid:'100002',text:'今天心情好些了'}]
+  assert.deepEqual(currentBatch(rows,'今天心情好些了').sourceIds,['now'])
+  assert.deepEqual(currentBatch(rows,'今天心情好些了').senderUids,['100002'])
+})
 test('review may remove a stale @ or correct it to an actual current speaker, never to a guessed account',()=>{
   const options={currentSenderUids:['222222']}
   assert.equal(applyReviewDecision('<at:111111>旧题', {change:true,text:'这句不是在说我。'},options).text,'这句不是在说我。')
