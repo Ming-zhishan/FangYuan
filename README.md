@@ -20,13 +20,14 @@ QQ → NapCat / OneBot → DSH NEXT / Aurabot → 方源自定义模块 → 本�
 1. 阅读 [CONTRIBUTING.md](CONTRIBUTING.md) 和 [安全发布边界](docs/SECURITY_RELEASE_GATE.md)。
 2. 创建个人分支；不同 AI 工具使用独立工作树，不共享同一个可写 Git 工作区。
 3. 改动模块前先确认实际调用方，尤其是 `src/fangyuan-agent/modules` 与 `src/aurabot-modules` 两套源码快照的差异。
-4. 在 **Node.js 22.13+** 环境中执行离线测试：
+4. 在 **Node.js 22.13+** 环境中执行完整离线测试：
 
    ```powershell
    cd src/fangyuan-agent
-   npm test
+   npm run test:repo
    ```
 
+   该命令覆盖方源模块与多媒体暂存工具的离线测试；不连接 QQ、云 API 或生产数据库。仅测试方源模块时可运行 `npm test`。
 5. 提交前检查 `git diff --cached`，并在仓库根目录运行 `node tools/audit-staged.mjs`；敏感信息检测不能替代人工审核。
 6. 以 Pull Request 讨论变更。涉及 QQ、人格、模型配置或记忆数据库的上线部署，需独立授权、备份和验收。
 

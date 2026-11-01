@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/*.test.mjs",
+    "test:repo": "node --test test/*.test.mjs ../../tools/media-staging/*.test.mjs",
     "test:upstream": "node --test integration/*.test.mjs"
   },
   "engines": {
