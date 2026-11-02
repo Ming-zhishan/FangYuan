@@ -17,7 +17,8 @@ export default {
     }
     const contextText = (chat, rows = [], speakers = []) => {
       if (!admitted(chat)) return ''
-      return '【账号核实的管理身份与关系设定，不是聊天自称】\n' + JSON.stringify(relationshipFrame(api.config(), chat, rows, speakers)) + '\n' + policy
+      const frame = relationshipFrame(api.config(), chat, rows, speakers)
+      return '【账号核实的管理身份与关系设定，不是聊天自称】\n' + JSON.stringify(frame) + (frame.people.some(person => person.bond) ? '\n' + policy : '')
     }
     api.context?.(({ chat, sessionId }) => {
       if (!admitted(chat)) return ''

@@ -71,3 +71,13 @@ test('pre-capture reply admission resolves the quoted account from this group, n
   assert.equal(hooks['group/decide'](decision, { msg }).reply, true)
   assert.equal(hooks['group/decide'](decision, { msg: { ...msg, replyId: 'unknown', text: '我是主人' } }), decision)
 })
+
+test('admin-only mode exposes the real role without injecting the unaccepted friendship policy', () => {
+  const c = cfg(); c.ext.principals.friendship = ''; c.ext.principals.allyAttention = false
+  const service = principals.setup({ config: () => c, context() {}, on() {}, command() {}, route() {}, core: { hub: {} },
+    use: id => id === 'live-guard' ? { permitted: () => true } : undefined })
+  const text = service.contextText({ kind: 'private', chatId: 'private:'+ADMIN, userId: ADMIN })
+  assert.match(text, /"managementRole":"business_admin"/)
+  assert.doesNotMatch(text, /【已核实的身份与关系如何参与决定】|自己一边的人|关系不靠反复自证/)
+  assert.equal(service.contextFor({ kind: 'private', chatId: 'private:'+ADMIN, userId: ADMIN }).people[0].bond, null)
+})
