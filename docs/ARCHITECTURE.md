@@ -61,6 +61,6 @@ flowchart TD
 
 ## 验证与资料优先级
 
-默认入口是 `src/fangyuan-agent` 下的 `npm run test:repo`，覆盖这里的默认模块测试和媒体 Node 测试；Python 试听反馈、固定上游及其他快照差异另需专项检查。测试层次和既有结果见[当前状态](CURRENT_STATE.md)。
+默认入口是 `src/fangyuan-agent` 下的 `npm run test:repo`，覆盖这里的默认模块测试、媒体 Node 测试和[提交审计回归](../tools/AUDIT_STAGED.md)；Python 试听反馈、固定上游及其他快照差异另需专项检查。测试层次和既有结果见[当前状态](CURRENT_STATE.md)。
 
 证据优先核对源码、调用方、当前配置和可定位验收；主分支包含、磁盘部署、进程装载和真实体验分别记录。本文及状态页是新成员入口；[旧架构布局](架构与目录规范.md)和迁移文档保留历史用途，其中路径、开关及测试总数不能直接作为现状。安全要求继续以[发布闸门](SECURITY_RELEASE_GATE.md)和[媒体工程铁则](MEDIA_ENGINEERING_RULES.md)为准。
