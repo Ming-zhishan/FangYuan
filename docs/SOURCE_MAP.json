@@ -1,0 +1,128 @@
+{
+  "format_version": 1,
+  "as_of": "2026-11-02",
+  "timezone": "Asia/Taipei",
+  "baseline_commit": "fe5d06cffc971e2f1a87597f5f9c0d349131916b",
+  "purpose": "Documentation inventory; not a build configuration or deployment authorization.",
+  "visibility_decision": "keep_public",
+  "collaboration_audience": "invited_members_and_ai",
+  "canonical_module_source": null,
+  "source_consolidation": "pending_review_no_source_selected",
+  "source_trees": [
+    {
+      "path": "src/fangyuan-agent/modules",
+      "role": "development_baseline_default_node_tests",
+      "tracked_files": 38
+    },
+    {
+      "path": "src/aurabot-modules",
+      "role": "parallel_module_snapshot_not_generated",
+      "tracked_files": 43
+    }
+  ],
+  "comparison": {
+    "normalization": "CRLF_to_LF",
+    "same_path_equal_count": 31,
+    "same_path_different": [
+      "conversation/index.mjs",
+      "fangyuan/index.mjs",
+      "learning/index.mjs",
+      "learning/store.mjs",
+      "learning/worker.mjs",
+      "stickers/index.mjs"
+    ],
+    "agent_only": [
+      "conversation/voice-examples.txt"
+    ],
+    "snapshot_only": [
+      "API.md",
+      "aurabot.d.ts",
+      "learning/budget_adapter.mjs",
+      "learning/cost_guard.mjs",
+      "learning/cost_policy.json",
+      "stickers/semantic-selector.mjs"
+    ]
+  },
+  "production_entry_observations": {
+    "observed_on": "2026-11-02",
+    "evidence": "Reused authorized read-only audit; repository source hashes verified again in this documentation task.",
+    "runtime_files_reread_this_batch": false,
+    "full_release_verified": false,
+    "loaded_process_verified": false,
+    "recipient_effect_verified": false,
+    "entries": [
+      {
+        "entry": "conversation/index.mjs",
+        "source_commit": "c05074b8c3ed44884eab76c34550186bf458cc80",
+        "source_path": "src/aurabot-modules/conversation/index.mjs",
+        "sha256_lf": "36c337d1891df0a86a66747b9feceb081c4e3333959d7227d0cdd8c0020c49db",
+        "scope": "entry_file_on_disk_only"
+      },
+      {
+        "entry": "learning/index.mjs",
+        "source_commit": "fe5d06cffc971e2f1a87597f5f9c0d349131916b",
+        "source_path": "src/aurabot-modules/learning/index.mjs",
+        "sha256_lf": "08c06deea2b69718a35e8323632eb3bf2239e587bd97dca85495ef30e8d1c3c1",
+        "scope": "entry_file_on_disk_only"
+      },
+      {
+        "entry": "stickers/index.mjs",
+        "source_commit": "fe5d06cffc971e2f1a87597f5f9c0d349131916b",
+        "source_path": "src/aurabot-modules/stickers/index.mjs",
+        "sha256_lf": "aa6da19f9ecee8fa75449fbe6cb11982f4be47db37668196b7b7a2ad8b4ff52a",
+        "scope": "entry_file_on_disk_only"
+      }
+    ]
+  },
+  "unmerged_prs": [
+    {
+      "number": 5,
+      "head_commit": "5d9f9a153179c3ddc250b553bb4225a653a8b08a",
+      "base": "main",
+      "state": "draft_open"
+    },
+    {
+      "number": 6,
+      "head_commit": "c05074b8c3ed44884eab76c34550186bf458cc80",
+      "base": "quality/evaluation-handoff-v1",
+      "state": "draft_open",
+      "deployment_evidence": "partial_fix_reported_and_conversation_entry_matched_only"
+    }
+  ],
+  "other_unmerged_branches": [
+    {
+      "branch": "fix/current-batch-context",
+      "commit": "d632337a561d0875d1afd687cfda703f0927a2d9",
+      "purpose": "current-batch source and reply target fixes",
+      "included_in_baseline": false,
+      "deployment": "not_confirmed_by_branch_presence"
+    },
+    {
+      "branch": "fix/voice-capability-fallback",
+      "commit": "d2599d5de950aa15aedaf79b1b9395ac52c96878",
+      "purpose": "voice availability fallback",
+      "included_in_baseline": false,
+      "deployment": "not_confirmed_by_branch_presence"
+    },
+    {
+      "branch": "fix/lore-context-cache-provenance",
+      "commit": "daf16256eca06bf5d5e339642193ec8a9df7cc1f",
+      "purpose": "lore context cache provenance",
+      "included_in_baseline": false,
+      "deployment": "not_confirmed_by_branch_presence"
+    },
+    {
+      "branch": "feat/consented-poke-interaction",
+      "commit": "9ee981f2836e44d5eff70e116e3c4a1232608e93",
+      "purpose": "opt-in poke prototype",
+      "included_in_baseline": false,
+      "deployment": "not_confirmed_by_branch_presence"
+    }
+  ],
+  "navigation": {
+    "architecture": "docs/ARCHITECTURE.md",
+    "responsibilities": "docs/MODULE_OWNERS.md",
+    "current_state": "docs/CURRENT_STATE.md"
+  },
+  "update_rule": "Verify refs, source paths and normalized hashes; record observation scope. Never overwrite runtime from this map."
+}
