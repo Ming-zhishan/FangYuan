@@ -21,7 +21,7 @@ function harness(t, module = conversation) {
   module.setup({
     config: () => cfg, dataDir: name => join(dir, name),
     on: (name, fn) => { hooks[name] = fn }, context: fn => contexts.push(fn), route() {}, log: { warn() {} },
-    use: id => id === 'learning' ? { store, permitted: () => true, reviewText: async prompt => { prompts.push(prompt); return '{"change":false}' } } : undefined,
+    use: id => id === 'learning' ? { store, permitted: () => true, reviewText: async prompt => { prompts.push(prompt); return '{"change":false}' } } : id === 'principals' ? { contextText: chat => chat.userId === '100001' ? '已核实的deep_friend关系金丝雀' : '' } : undefined,
     core: { hub: { lastTextOf: () => '被夸奖呢？' } },
   })
   const chat = { chatId: 'private:100001', userId: '100001', kind: 'private' }
@@ -44,6 +44,7 @@ for (const [name, load] of [
     assert.deepEqual(scene.currentBatch.sourceIds, ['long', 'a', 'b'])
     await h.hooks.reply('只答了夸奖', { chatId: h.chat.chatId, userText: '被夸奖呢？' })
     const prompt = h.prompts[0]
+    assert.ok(prompt.includes('已核实的deep_friend关系金丝雀'), 'review must receive the same configured relationship as generation')
     assert.ok(prompt.includes(JSON.stringify(queryText).slice(1, -1)))
     assert.ok(prompt.includes('"sourceIds":["long","a","b"]'), 'review-row compression must not change current source identity')
     const diagnostic = JSON.parse(readFileSync(join(h.dir, 'review-events.jsonl'), 'utf8').trim())
