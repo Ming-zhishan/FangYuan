@@ -1,5 +1,7 @@
 # 协作规范
 
+新成员先阅读[当前架构](docs/ARCHITECTURE.md)、[模块职责](docs/MODULE_OWNERS.md)和[工程状态与源码对应关系](docs/CURRENT_STATE.md)，确认实际调用方及任务可写范围。负责人尚未登记的共享模块，先在独立工作区准备说明，由用户或指定集成人员协调。
+
 **多媒体开发必须先阅读 [多媒体工程铁则](docs/MEDIA_ENGINEERING_RULES.md)，并以实际验收证据与当前“仅私聊”安全边界为准。**
 
 1. 请先阅读 README、[Git协作与安全边界](docs/Git协作与安全边界.md) 和 [安全闸门](docs/SECURITY_RELEASE_GATE.md)。

@@ -70,7 +70,7 @@ flowchart TD
 
 语音链路有历史私聊播放反馈记录，但普通 TTS 不等于目标角色音色，旧记录也不能证明新语音包已通过验收。当前没有适合本次新增公开展示的已核授权素材，因此首页暂不放对话截图或媒体样品。
 
-频繁变化的分支、证据强度与待确认项集中在[现状与证据](docs/README_AUDIT.md)，避免用素材数量、测试数量或完成百分比代替实际效果。
+频繁变化的分支、源码对应关系与待确认项从[当前工程状态](docs/CURRENT_STATE.md)进入；本次首页改写的历史依据保留在[现状与证据](docs/README_AUDIT.md)。避免用素材数量、测试数量或完成百分比代替实际效果。
 
 ## 技术栈与源码入口
 
@@ -100,6 +100,8 @@ operations/          本机布局、来源差异与维护入口
 自定义扩展复用第三方宿主与原生能力，例如语音和表情模块通过 Aurabot 接口适配。两套模块快照的目录代表不同装载语义，修改前应确认实际调用方与同步范围，不能仅凭文件相似合并或删除。
 
 ## 开发入口
+
+新成员先看[当前架构](docs/ARCHITECTURE.md)、[模块职责与交接](docs/MODULE_OWNERS.md)和[源码与生产对应关系](docs/CURRENT_STATE.md)。这三份文档解释已有工程和待确认事项，不表示已完成源码整合或生产发布。
 
 新协作者先阅读 [CONTRIBUTING](CONTRIBUTING.md)、[协作与安全边界](docs/Git协作与安全边界.md) 和[安全发布闸门](docs/SECURITY_RELEASE_GATE.md)。多媒体工作另须阅读[多媒体工程铁则](docs/MEDIA_ENGINEERING_RULES.md)与[多媒体接任入口](docs/MEDIA_HANDOFF.md)；README 维护从[维护方法](docs/README_MAINTENANCE.md)开始。
 
@@ -131,7 +133,7 @@ npm run test:repo
 
 ## 安全、许可与致谢
 
-GitHub、开发克隆与生产实例相互隔离。仓库不包含生产服务数据、QQ 会话、Cookie / Token、真实模型凭据、私人聊天与记忆数据库、模型权重、媒体资源、日志或自动生成缓存。真实 Windows 路径保存在被忽略的 `config/project-paths.local.json`，公共配置仅保留相对映射。
+GitHub、开发克隆与生产实例应保持隔离，不提交 QQ 会话、Cookie / Token、真实模型凭据、私人聊天与记忆数据库、模型权重、受限媒体、日志或自动生成缓存。当前公开树的历史脚本仍有账号标识，不能视为已完成脱敏；清理与历史审查是[尚未解决的事项](docs/CURRENT_STATE.md)。本机 Windows 路径覆盖保存在被忽略的 `config/project-paths.local.json`，公共配置使用相对映射，旧脚本的路径假设仍需逐项核对。
 
 `operations/` 与旧启动、部署、账号控制脚本可能依赖真实环境并产生副作用，不作为开发快速开始入口。涉及生产 QQ、人格配置、模型配置或数据库的部署须另行授权，备份并验收；PR 合并本身不等于部署。
 
