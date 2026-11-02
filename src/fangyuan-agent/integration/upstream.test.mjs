@@ -13,7 +13,7 @@ const { startMockOneBot } = await import(pathToFileURL(join(root, 'test/helpers/
 const until = async (fn) => { const stop = Date.now() + 10000; while (Date.now() < stop) { if (await fn()) return; await new Promise((r) => setTimeout(r, 30)) } throw new Error('Expected actual upstream pipeline condition was not reached') }
 
 test('actual Aurabot loads all Fang Yuan modules and passes scoped messages through the real hub', async () => {
-  const base = resolve('../runtime-tests'); mkdirSync(base, { recursive: true })
+  const base = resolve('../../tools/dialogue-quality/private/upstream-runtime-tests'); mkdirSync(base, { recursive: true })
   const dir = mkdtempSync(join(base, 'actual-aurabot-'))
   process.env.AURABOT_DATA_DIR = dir; process.env.DSH_HOME = join(dir, 'home'); process.env.AURABOT_WORKSPACE = join(dir, 'workspace')
   const gateway = await startMockOneBot({ selfId: B })
@@ -131,6 +131,15 @@ test('actual Aurabot loads all Fang Yuan modules and passes scoped messages thro
     const joint = fake.turns.filter(t => t.userText.includes('【群聊') && t.userText.includes('多人艾特甲问候') && t.userText.includes('多人艾特乙问近况'))
     assert.equal(joint.length, 1, 'two different people @ in one burst are processed together despite the native burst brake')
     assert.equal(gateway.calls.filter(c => c.action === 'send_group_msg' && String(c.params.group_id) === freshGroup).length, beforeGroupSend + 1)
+
+    // Real hub prompt hooks see the full merge before its 600-character lastText cache.
+    const firstQuestion = '首问必须保留：' + '甲'.repeat(650)
+    const secondQuestion = '末问也必须保留'
+    const beforeReviews = reviewRequests.length
+    for (const [mid, text] of [[112, firstQuestion], [113, secondQuestion]]) gateway.push({ message_type: 'private', user_id: Number(A), message_id: mid, sender: { user_id: Number(A), nickname: '操作者' }, message: [{ type: 'text', data: { text } }] })
+    await until(() => reviewRequests.slice(beforeReviews).some(r => r.messages[0].content.includes(secondQuestion)))
+    const mergedReview = reviewRequests.slice(beforeReviews).find(r => r.messages[0].content.includes(secondQuestion)).messages[0].content
+    assert.ok(mergedReview.includes(firstQuestion + '\\n' + secondQuestion), 'real host review retains both complete questions, despite the truncated host cache')
   } finally {
     // The upstream one-shot watchdog can fire after fake-host disposal.
     if (host) host.setConfig({ ...host.getConfig(), enabled: false })
