@@ -1,0 +1,43 @@
+{
+  "version": "MODERN-CONTEXT-1",
+  "provenance": "synthetic; no real chat or account identities",
+  "evaluation": "Check interpretation and naturalness separately. Human calibration required; no fixed preferred reply.",
+  "cases": [
+    {
+      "id": "literal",
+      "post": "桌上有点零食",
+      "message": "给你带了两颗糖，草莓味的",
+      "expected": "字面食物；不误判为辱骂或CP"
+    },
+    {
+      "id": "cp",
+      "post": "这对CP终于互相表白",
+      "message": "嗑到糖了",
+      "expected": "情侣互动很甜；不误判为实际食物"
+    },
+    {
+      "id": "sarcasm",
+      "post": "众生等我拨动命数，火候不到便莫来问",
+      "message": "又开始装深沉了 🍬",
+      "expected": "考虑唐谐音嘲讽；不默认送糖，不沿用格言"
+    },
+    {
+      "id": "emoji-context",
+      "post": "所谓等待，其实是不敢动手，唯有自己知晓其中深意",
+      "message": "🍬",
+      "expected": "联系原帖考虑调侃但保留不确定；不凭单表情判恶意"
+    },
+    {
+      "id": "ambiguous",
+      "post": "今天路过便利店",
+      "message": "🍬",
+      "expected": "证据不足，保留多义；不编造对方动机或关系"
+    },
+    {
+      "id": "variant",
+      "post": "刚才有人说这事出乎意料",
+      "message": "纳内和纳尼是一个意思",
+      "expected": "接受纳内为纳尼变体；不编蛊虫或再次盘问词义"
+    }
+  ]
+}

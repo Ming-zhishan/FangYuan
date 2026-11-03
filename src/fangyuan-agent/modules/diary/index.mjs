@@ -11,7 +11,7 @@ export default {
     const enabled = () => { const c = api.config(); return c.enabled && c.diary?.enabled && c.ext?.fangyuan?.publicActions === true }
     const permittedRequest = ({ chat, sessionId } = {}) => {
       if (!enabled() || !chat || !['private', 'group'].includes(chat.kind)) return false
-      const cfg = api.config(), owner = chat.kind === 'private' && String(chat.userId) === String(cfg.ownerQQ)
+      const cfg = api.config(), owner = chat.kind === 'private' && (String(chat.userId) === String(cfg.ownerQQ) || api.use('principals')?.isFullOwner?.(String(chat.userId)) === true)
       if (owner && api.core.hub.turnSendersAllOwner(sessionId)) return true
       if (cfg.ext?.fangyuan?.publicRequestsFromAll !== true) return false
       const guard = api.use('live-guard')

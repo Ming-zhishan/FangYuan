@@ -31,6 +31,28 @@ export function scheduleReconciliation(store, scopes) {
   }
 }
 
+/** Read the latest real absence before old archive/reconciliation backlog, without deleting that backlog. */
+export function nextRecovery(store, { permitted = () => true, now = store.clock(), ownerScope = '' } = {}) {
+  return store.db.prepare(`SELECT c.* FROM coverage c JOIN gaps g ON g.id=c.gap
+    WHERE c.status IN ('pending','partial') AND c.retryAt<=?
+    ORDER BY (g.reason='delivery_reconciliation'),g.end DESC,
+      CASE WHEN c.scope=? THEN 0 WHEN c.scope LIKE 'group:%' THEN 1 ELSE 2 END,c.pages,c.rowid`).all(now,ownerScope).find(c=>permitted(c.scope))
+}
+
+/** Include the subsequent conversation in this scope; retrieval summaries alone are not a timeline. */
+export function catchupFrame(store, scope, messages) {
+  if(!messages.length)return []
+  const first=Math.min(...messages.map(m=>m.at))
+  const select=`SELECT m.id,m.mid,m.uid,m.role,m.text,m.at,l.replyMid FROM messages m LEFT JOIN message_links l ON l.source=m.id WHERE m.scope=? AND m.forgotten=0 AND m.at>=?`
+  const nearby=store.db.prepare(select+' ORDER BY m.at,m.rowid LIMIT 24').all(scope,first)
+  const latest=store.db.prepare(select+' ORDER BY m.at DESC,m.rowid DESC LIMIT 24').all(scope,first).reverse()
+  return [...new Map([...nearby,...latest].map(m=>[m.id,m])).values()].sort((a,b)=>a.at-b.at)
+}
+
+export function catchupPrompt(core) {
+  return core+'\n你正在补看之前未处理的信息。先把messages和同场景laterConversation合起来读：后续的补充、纠正、撤回、他人回答和当前话题都要考虑，不能只回离线前末句。已解决、已撤回或失效的请求不要机械重答；仍值得接上的再回应。群聊可自然直接接话，是否简短解释晚回由语境决定，不强制解释，也不必总说刚补看。只有有明确缺席证据才能提到那段不在线，不能把心跳缺口说成已确认电脑关机或睡眠，不编缺席原因或装作当时在场。没必要现在接话给[沉默]。不虚构操作；没有工具，不执行动作，不泄露其他会话。只输出要发的话。'
+}
+
 /** Older pages must move backwards. Empty/failing/stalled pages prove a coverage gap, not completeness. */
 export async function recoverPage(store, coverage, { call, permitted, selfId, count = 100, stickers = [] }) {
   if (!permitted(coverage.scope)) return

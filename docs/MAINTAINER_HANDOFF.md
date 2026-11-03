@@ -1,5 +1,7 @@
 # 项目接任指南
 
+本分支的最新专项接任先读[共同所有者与Mac协作](dialogue-quality/CO-OWNERS-AND-MAC-20261103.md)及[对话HANDOFF](dialogue-quality/HANDOFF.md)：已接续PR21–23并适配统一构建，原宿主与指定共同所有者同权。实际GitHub账号和Mac远程设备仍待登记，不能把QQ授权当作GitHub邀请已完成。以下固定主线基线按日期保留。
+
 核对日期：2026-11-03（Asia/Taipei）；仓库基线 `ae7b9c0`。面向逐步接手开发的人与 AI 协作者。本文集中提供阅读顺序和交接条件，动态状态以[工程状态](CURRENT_STATE.md)及对应 PR 为准。
 
 ## 第一次接手的阅读顺序

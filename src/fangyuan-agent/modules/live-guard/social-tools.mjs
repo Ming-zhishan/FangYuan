@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 
 export function installSocialTools(api, { ready, permitted }) {
   const capabilities = (chat) => {
-    const cfg = api.config(), owner = chat?.kind === 'private' && String(chat.userId) === String(cfg.ownerQQ)
+    const cfg = api.config(), owner = chat?.kind === 'private' && (String(chat.userId) === String(cfg.ownerQQ) || api.use('principals')?.isFullOwner?.(String(chat.userId)) === true)
     const manager = owner || chat?.kind === 'private' && api.use('principals')?.isManager?.(String(chat.userId)) === true
     const admitted = cfg.enabled && ready() && (!chat?.chatId || permitted(chat.chatId))
     const writes = Object.fromEntries(['qqNickname', 'qqSignature', 'qqAvatar', 'qqFriendRequest'].map((k) => [k, Boolean(admitted && (cfg.profilePerms?.[k] === 'all' || (owner && (cfg.profilePerms?.[k] ?? 'owner') === 'owner')))]))
@@ -12,6 +12,7 @@ export function installSocialTools(api, { ready, permitted }) {
       groupDirectory: { tool: manager ? 'fy_group_directory' : null, available: manager && ready() },
       directedGroupMessage: { tool: manager ? 'fy_send_group_message' : null, enabled: manager && ready() && cfg.ext?.liveGuard?.ownerGroupOutbound === true },
       qzone: { tool: publicScene && api.use('diary') ? 'qq_send_qzone' : null, enabled: Boolean(admitted && publicScene && api.use('diary') && cfg.diary?.enabled && cfg.ext?.fangyuan?.publicActions === true), note: '已开放时可以考虑提议，也可按关系、场合和意愿拒绝；只有真实tid回执才可说已发布。' },
+      qzoneReplies: { enabled: Boolean(admitted && cfg.qzoneSocial?.enabled && cfg.qzoneSocial?.replyOwn && api.use('qzone-social')), mode: 'own_post_comment_threads', automatic: true, proof: 'thread_readback_required' },
       profileWriteEnabled: writes, proactiveAddFriend: { available: false, note: '主动加好友未挂载；处理收到的好友申请是另一项权限。' },
       memory: Boolean(api.use('learning')), originalSearch: Boolean(api.use('lore')),
       ...(owner ? { enabledGroupIds: (cfg.allow?.groups || []).map(String), ownerLevel: cfg.ownerLevel } : {}) }
