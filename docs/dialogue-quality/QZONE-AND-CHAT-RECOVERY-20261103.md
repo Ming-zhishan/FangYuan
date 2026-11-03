@@ -30,7 +30,7 @@
 在 `src/fangyuan-agent` 执行：
 
 ```powershell
-node --test test/qzone-replies.test.mjs test/modern-context.test.mjs test/conversation.test.mjs test/qq-compaction.test.mjs
+node --test test/qzone-replies.test.mjs test/modern-context.test.mjs test/conversation.test.mjs test/qq-compaction.test.mjs test/response-style.test.mjs test/turn-input.test.mjs
 ```
 
 真实宿主隔离测试使用已有 `integration/qzone-replies.test.mjs`：设置 `AURABOT_SOURCE_ROOT` 指向已验证的原生 fork，`FY_TEST_MODULES_ROOT` 指向精确生产模块组合副本，执行 `node --test integration/qzone-replies.test.mjs`。它使用假 QQ、假模型和新数据目录，私人 canary 不得出现在公开生成的 text/ctxText，且只能写一次正确父评论。**不得把这两个路径设成生产数据目录。**
@@ -46,3 +46,13 @@ node --test test/qzone-replies.test.mjs test/modern-context.test.mjs test/conver
 优先遗留：观察新长会话压缩及自动私聊稳定性；根据后续真实反馈补有价值的梗义回归；查清旧长请求的无正文原因与原有学习任务阻塞。没有开发新的收费批量评审或独立抓取调度系统。遇到模型错误须保存原失败，控制重试；历史回复是否缺失以真实回读为准，不能靠在线状态判断。
 
 来源：[NapCat 空间功能实现 PR2124](https://github.com/NapNeko/NapCatQQ/pull/2124)、[4.18.42 官方版本](https://github.com/NapNeko/NapCatQQ/releases/tag/v4.18.42)、[北京日报对“唐”等用法的报道](https://xinwen.bjd.com.cn/content/s684117aae4b0ec1c3d9801ad.html)。词义报道不证明某个具体发言人的真实意图。
+
+## 后续用户决定：篇幅随内容变化（21:42 热更新）
+
+用户明确要求有时多几句、有时一两句，不采用固定回复长度或长短轮换。现有人格正文已表达随事情变化，本次保留人物正文不变；发现实际群聊宿主提示仍含“一般说一两句就好”，空间生成也含“通常一两句”。
+
+新增 `conversation/response-style.mjs`，仅替换识别到的宿主群聊提示尾部，不改用户正文或引用；私聊/普通steer不匹配则原样通过。生成规则与发送前复核共用按内容、情绪和期待决定篇幅的说明，空间取消默认两句。多问题要接全，短招呼可以短接，不强制反问、金句、多气泡或刻意凑长。该调整不增加群发言频率或改写人格/记忆。
+
+最终20项相关单测、2项真实宿主隔离集成通过，覆盖原文/媒体/引用保留及实际群提示和复核不再强制两句。仅热重载conversation/qzone-social三文件，配置和其他源文件哈希保持。模型或真人对这次篇幅变化的自然度尚未验收，没有为此新增模型批评测。
+
+GitHub草稿：[PR23](https://github.com/Ming-zhishan/FangYuan/pull/23)，基于PR22，未合并main。公开提交9184add曾经干净导出、14项单测和1项真实宿主隔离集成复现通过；后续篇幅变动另按上述20+2记录，不把旧导出测试冒称为新提交的干净检出测试。
