@@ -29,7 +29,7 @@
 
 ## 完整文本实际进入哪里
 
-人物卡仍使用`src/fangyuan-agent/personas/gu-yue-fang-yuan.md`，12节，区分9节人物解释和QQ/朋友/动作适配。正文去掉YAML并规范换行后，完整进入两套`fangyuan/core.txt`；provenance标明compression=none。不再维护一份更短的运行摘要。
+人物卡仍使用`src/fangyuan-agent/personas/gu-yue-fang-yuan.md`，12节，前9节以人物解释为主并明示QQ表达适配，第10至12节为QQ/朋友/动作安排。正文去掉YAML并规范换行后，完整进入两套`fangyuan/core.txt`；provenance标明compression=none。不再维护一份更短的运行摘要。后续改卡用`python tools/dialogue-quality/scripts/build_persona_core.py --write`同步；默认不带--write只核对，不写生产。
 
 既有装载钩子保留：来源哈希匹配时使用完整core；面板改了卡片，仍尊重改后的文本，不以旧编译产物覆盖。新的实际宿主集成测试从原生读取人物卡，检查模型生成与发送前复核获得同一完整人格，避免只检查磁盘文档而漏掉实际生效路径。
 
@@ -43,6 +43,7 @@
 
 ```powershell
 python tools/dialogue-quality/scripts/verify_persona_sources.py
+python tools/dialogue-quality/scripts/build_persona_core.py
 python -m unittest discover -s tools/dialogue-quality/scripts -p test_persona_sources.py
 python tools/dialogue-quality/scripts/evaluate.py validate --cases tools/dialogue-quality/data/persona-cases.v1.jsonl
 node --test src/fangyuan-agent/test/persona-admin.test.mjs
