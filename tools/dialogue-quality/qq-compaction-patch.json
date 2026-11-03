@@ -1,0 +1,188 @@
+[
+  {
+    "id": "preset-aurabot-private",
+    "name": "@deepseek-ai/dsh-agent-preset",
+    "config": {
+      "id": "aurabot-private",
+      "name": "Aurabot · 主人私聊",
+      "description": "大肥鱼在 QQ 上和主人私聊时用：人格 + 完整工具",
+      "order": 60,
+      "plugins": [
+        {
+          "id": "persona",
+          "name": "@deepseek-ai/dsh-persona",
+          "config": {
+            "prefix": "{{aurabot_persona}}\n\n{{aurabot_rules_private}}",
+            "complete": true
+          }
+        },
+        {
+          "id": "time-context",
+          "name": "@deepseek-ai/dsh-time-context"
+        },
+        {
+          "id": "tool-bash",
+          "name": "@deepseek-ai/dsh-tool-bash",
+          "disabled": true
+        },
+        {
+          "id": "tool-pwsh",
+          "name": "@deepseek-ai/dsh-tool-pwsh",
+          "disabled": false
+        },
+        {
+          "id": "tool-fs",
+          "name": "@deepseek-ai/dsh-tool-fs"
+        },
+        {
+          "id": "tool-fs-search",
+          "name": "@deepseek-ai/dsh-tool-fs-search",
+          "config": {
+            "sampleOverCapGlobResults": false
+          }
+        },
+        {
+          "id": "compaction",
+          "name": "cordis:group",
+          "group": true,
+          "isolate": {
+            "compaction": true,
+            "toolResultPruner": true
+          },
+          "config": [
+            {
+              "id": "compaction-basic",
+              "name": "@deepseek-ai/dsh-compaction-basic",
+              "config": {
+                "thresholdRatio": 0.6,
+                "headroomTokens": 1024,
+                "retainTokens": 4096,
+                "maxTokens": 8192,
+                "compactionRetries": 0,
+                "maxOverflowRetries": 0
+              }
+            },
+            {
+              "id": "command-compact",
+              "name": "@deepseek-ai/dsh-command-compact"
+            },
+            {
+              "id": "tool-result-pruner",
+              "name": "@deepseek-ai/dsh-compaction-tool-result-pruner",
+              "config": {
+                "thresholdChars": 8192,
+                "headChars": 4096,
+                "tailChars": 1024
+              }
+            }
+          ]
+        },
+        {
+          "id": "tool-web",
+          "name": "@deepseek-ai/dsh-tool-web",
+          "config": {
+            "fetch": true,
+            "searchTimeoutMs": 60000
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": "preset-aurabot-private-long",
+    "name": "@deepseek-ai/dsh-agent-preset",
+    "config": {
+      "id": "aurabot-private-long",
+      "name": "Aurabot · 主人私聊（长任务模式）",
+      "description": "主人私聊 + 后台任务（jobs）和定时任务（schedule）：长任务跑完会自动唤醒她回报",
+      "order": 62,
+      "plugins": [
+        {
+          "id": "persona",
+          "name": "@deepseek-ai/dsh-persona",
+          "config": {
+            "prefix": "{{aurabot_persona}}\n\n{{aurabot_rules_private}}",
+            "complete": true
+          }
+        },
+        {
+          "id": "time-context",
+          "name": "@deepseek-ai/dsh-time-context"
+        },
+        {
+          "id": "tool-bash",
+          "name": "@deepseek-ai/dsh-tool-bash",
+          "disabled": true
+        },
+        {
+          "id": "tool-pwsh",
+          "name": "@deepseek-ai/dsh-tool-pwsh",
+          "disabled": false
+        },
+        {
+          "id": "tool-fs",
+          "name": "@deepseek-ai/dsh-tool-fs"
+        },
+        {
+          "id": "tool-fs-search",
+          "name": "@deepseek-ai/dsh-tool-fs-search",
+          "config": {
+            "sampleOverCapGlobResults": false
+          }
+        },
+        {
+          "id": "compaction",
+          "name": "cordis:group",
+          "group": true,
+          "isolate": {
+            "compaction": true,
+            "toolResultPruner": true
+          },
+          "config": [
+            {
+              "id": "compaction-basic",
+              "name": "@deepseek-ai/dsh-compaction-basic",
+              "config": {
+                "thresholdRatio": 0.6,
+                "headroomTokens": 1024,
+                "retainTokens": 4096,
+                "maxTokens": 8192,
+                "compactionRetries": 0,
+                "maxOverflowRetries": 0
+              }
+            },
+            {
+              "id": "command-compact",
+              "name": "@deepseek-ai/dsh-command-compact"
+            },
+            {
+              "id": "tool-result-pruner",
+              "name": "@deepseek-ai/dsh-compaction-tool-result-pruner",
+              "config": {
+                "thresholdChars": 8192,
+                "headChars": 4096,
+                "tailChars": 1024
+              }
+            }
+          ]
+        },
+        {
+          "id": "tool-web",
+          "name": "@deepseek-ai/dsh-tool-web",
+          "config": {
+            "fetch": true,
+            "searchTimeoutMs": 60000
+          }
+        },
+        {
+          "id": "tool-jobs",
+          "name": "@deepseek-ai/dsh-tool-jobs"
+        },
+        {
+          "id": "tool-schedule",
+          "name": "@deepseek-ai/dsh-tool-schedule"
+        }
+      ]
+    }
+  }
+]
