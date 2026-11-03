@@ -96,7 +96,7 @@ src/qq-bootstrap/    历史工具与仍可复用的网关代码
 tools/media-staging/ 离线媒体候选暂存与证据审核
 config/              相对路径映射和配置模板
 docs/                安全、架构历史及维护依据
-operations/          本机布局、来源差异与维护入口
+operations/          本机布局检查、默认只输出的来源差异检查及合成回归
 ```
 
 自定义扩展复用第三方宿主与原生能力，例如语音和表情模块通过 Aurabot 接口适配。两套模块快照的目录代表不同装载语义，修改前应确认实际调用方与同步范围，不能仅凭文件相似合并或删除。
@@ -118,6 +118,8 @@ npm run test:repo
 ```
 
 该入口要求 **Node.js 22.13+**，覆盖方源模块、媒体 Node 测试和[提交审计回归](tools/AUDIT_STAGED.md)，使用合成数据与隔离临时目录，不连接真实 QQ、云 API 或生产数据库。只验证方源模块可运行 `npm test`；媒体工具说明见[暂存与审核指南](tools/media-staging/README.md)。功能或修复改用仓库约定的 `feature/*`、`fix/*` 分支，多位协作者各用独立工作树。
+
+默认检查还覆盖[源码差异工具的合成回归](operations/README.md)，不会读取真实运行目录。实际差异检查仅供获授权的本机维护使用：默认只输出结果，显式 `--report` 才新建报告，不覆盖既有文件；缺失运行目录会明确失败。其他布局检查仍有写报告与端口探测行为。
 
 仓库 CI 使用 Node.js 24、Python 3.12，在 Windows 和 Linux 分别执行 Node 离线测试、Python 试听反馈门禁及完整 PR 变更审计；本地需要媒体 Python 检查时，在仓库根目录运行 `python tools/media-staging/voice_focus_test.py`。这不涵盖全部历史 Python 工具，环境范围见[接任指南](docs/MAINTAINER_HANDOFF.md#环境与验证)。
 
