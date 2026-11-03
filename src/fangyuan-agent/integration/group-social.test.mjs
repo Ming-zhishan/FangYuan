@@ -16,7 +16,7 @@ test('actual host: quota free ordinary chat, scoped platform ban/lift, adaptive 
   const legacy=join(dir,'legacy.json');writeFileSync(legacy,'{"mode":"disabled"}')
   const patch=JSON.parse((await import('node:fs')).readFileSync(resolve('config.patch.json'),'utf8'))
   writeFileSync(join(dir,'config.json'),JSON.stringify({...patch,modules:{...patch.modules,conversation:{enabled:true,useBuiltin:false},principals:{enabled:true,useBuiltin:false}},enabled:true,dryRun:false,setupDone:true,botQQ:bot,ownerQQ:owner,allow:{groups:[group],private:[owner]},voice:{enabled:false},stickers:{enabled:false},gateway:'onebot',merge:{enabled:true,waitSec:.05,maxSec:.1},group:{interjectChance:1,minRelevance:0,minRecentMessages:1,cooldownSec:0,maxPerHour:0,quietHours:[0,0],burstMax:1},snowluma:{autoStart:false,autoAttach:false,httpUrl:gateway.httpUrl,wsUrl:gateway.wsUrl,httpToken:gateway.token,wsToken:gateway.token},ext:{...patch.ext,learning:{enabled:true,modelEnabled:false},conversation:{reviewEnabled:true,pacingEnabled:true,socialEnabled:true,stripTerminalPunctuation:true,unlimitedParticipation:true,ordinaryCooldownSec:1},liveGuard:{enforce:true,ownerOutbound:false,legacyModePath:legacy},principals:{enabled:true,businessAdmins:[],friendship:'deep_allies',allyAttention:false}}}))
-  const seen=[],reviews=[],fake=createFakeDsh({brain:async({ctxText})=>{seen.push(ctxText);return '接得上，继续聊。'}})
+  const seen=[],reviews=[],prompts=[],fake=createFakeDsh({brain:async({ctxText,text})=>{seen.push(ctxText);prompts.push(text);return '接得上，继续聊。'}})
   let host
   const push=(text,mid,at=false)=>gateway.push({message_type:'group',group_id:Number(group),user_id:Number(owner),message_id:mid,sender:{user_id:Number(owner),nickname:'合成群友'},message:[...(at?[{type:'at',data:{qq:bot}}]:[]),{type:'text',data:{text}}]})
   try{
@@ -28,6 +28,7 @@ test('actual host: quota free ordinary chat, scoped platform ban/lift, adaptive 
     push('今天游戏这一局很刺激',1)
     await until(()=>sent().length===1)
     assert.equal(sent()[0].params.message.filter(x=>x.type==='text').map(x=>x.data.text).join(''),'接得上，继续聊')
+    assert.match(prompts[0],/不固定句数/);assert.doesNotMatch(prompts[0],/一般说一两句就好/);assert.match(reviews[0],/不固定句数/)
     const ban={post_type:'notice',notice_type:'group_ban',sub_type:'ban',group_id:Number(group),user_id:Number(bot),operator_id:100002,duration:600}
     gateway.push(ban)
     await until(async()=>Object.values((await fake.call('/ext/conversation/social-state')).json().groups).some(s=>s.muted))
