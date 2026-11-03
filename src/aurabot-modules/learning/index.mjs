@@ -4,7 +4,7 @@ import { BackgroundModel } from './model.mjs'
 import { CostGuard } from './cost_guard.mjs'
 import { StagedLearningAdapter } from './budget_adapter.mjs'
 import { LearningWorker } from './worker.mjs'
-import { heartbeat, recoverPage, pendingCatchup, rawText, scheduleReconciliation } from './history.mjs'
+import { heartbeat, recoverPage, pendingCatchup, rawText, scheduleReconciliation, nextRecovery, catchupFrame, catchupPrompt } from './history.mjs'
 import { MemoryVectors } from './vectors.mjs'
 import { publicNetwork } from './network.mjs'
 import { describeDeliveredMessage, messageLinks, deliveryFingerprint } from './message-context.mjs'
@@ -141,10 +141,11 @@ export default {
         const messages = pendingCatchup(store, scope)
         if (!messages.length) continue
         const core = api.use('fangyuan')?.personaCore?.() || '你是古月方源，九转炼道尊者，永生未得。'
-        const text = await model.ask(core + '\n你正在补看之前未处理的信息。只有确切缺席记录才说那段没在线；没有则只说刚补看，不编缺席原因或装作当时在场。只在确实值得现在接上的直接问题上回复，过时或没内容给[沉默]。不虚构操作；没有工具，不执行动作，不泄露别的会话。只输出要发的话。', JSON.stringify({ messages: messages.map(({ id, uid, text, at }) => ({ id, uid, text, at })), context: store.context(scope, messages.map((m) => m.uid)) }), { maxTokens: 8192 })
+        const laterConversation = catchupFrame(store, scope, messages)
+        const text = await model.ask(catchupPrompt(core), JSON.stringify({ messages: messages.map(({ id, uid, text, at }) => ({ id, uid, text, at })), laterConversation, context: store.context(scope, messages.map((m) => m.uid)) }), { maxTokens: 8192 })
         // A foreground reply may have arrived while background generation was in flight.
         const stillPending = new Set(pendingCatchup(store, scope).map((m) => m.id))
-        if (!permitted(scope) || api.core.mutes?.muted?.(scope) || messages.some((m) => !stillPending.has(m.id))) continue
+        if (!permitted(scope) || api.core.mutes?.muted?.(scope) || messages.some((m) => !stillPending.has(m.id)) || JSON.stringify(catchupFrame(store, scope, messages)) !== JSON.stringify(laterConversation)) continue
         const key = hash('catchup|' + messages.map((m) => m.id).sort().join('|')), silence = text.trim() === '[沉默]'
         const claimed = store.db.prepare('INSERT OR IGNORE INTO outbound(id,scope,source,status,text,at) VALUES(?,?,?,?,?,?)').run(key, scope, messages[0].id, silence ? 'declined' : 'attempted', text, Date.now()).changes
         if (!claimed) continue
@@ -170,7 +171,7 @@ export default {
         importLegacy()
         compactHotCache()
         scheduleReconciliation(store, list)
-        const coverage = store.db.prepare("SELECT * FROM coverage WHERE status IN ('pending','partial') AND retryAt<=? ORDER BY rowid LIMIT 1").get(Date.now())
+        const coverage = nextRecovery(store, { permitted, ownerScope: 'private:' + api.config().ownerQQ })
         if (coverage) await recoverPage(store, coverage, { call: (...args) => onebot.call(...args), permitted, selfId: api.config().botQQ, stickers: api.use('stickers')?.library?.().items || [] })
         if (settings().embeddingEnabled === true) try { await vectors.tick() } catch (e) { api.log.warn('本地记忆索引稍后续建：', e.message) }
         if (!settings().modelEnabled || Date.now() - lastIncoming < 30000) return
