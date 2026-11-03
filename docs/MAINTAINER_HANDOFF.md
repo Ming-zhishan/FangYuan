@@ -22,7 +22,7 @@
 | 平台、网关与发布 | `live-guard/`、`src/qq-bootstrap/`、`operations/`、`config/` | 平台主责任人、当前调用方、外联与写入副作用；旧脚本不作为快速启动入口 |
 | 项目介绍与文档 | 根 README、`docs/`、PR 模板 | 功能所处证据层次、实际路径与命令，随相关改动同步 |
 
-上表中的模块相对路径位于两套模块树内；具体目录与差异从[架构](ARCHITECTURE.md)和[来源映射](SOURCE_MAP.json)定位。当前默认测试使用 `src/fangyuan-agent/modules/`，不证明 `src/aurabot-modules/` 独有逻辑全部通过测试。
+上表中的模块以基础源码和运行覆盖分别维护，具体位置见[构建说明](MODULE_BUILD.md)。默认测试覆盖基础模块，并直接生成、导入 runtime 包执行输入回归；六处差异继续保留，不能把独立导入通过当作所有线上效果已验收。
 
 平台与数据主责任人、实际接任人员的 GitHub 身份尚未登记。用户逐步减少参与前，应由其指定集成人员和发布授权人，可由同一人兼任；未登记时不能自行认领生产权限。main 已有 PR 与自动检查保护，独立审批人数暂为 0，详细设置见[保护记录](CI_AND_BRANCH_PROTECTION.md)。
 
@@ -31,10 +31,7 @@
 普通开发克隆可执行下列离线检查。Node.js 最低版本由 `src/fangyuan-agent/package.json` 约定为 22.13；CI 验证环境为 Node.js 24、Python 3.12、Windows / Linux。该 Node 测试包未声明外部 npm 依赖，默认测试无需先配置模型、QQ 账号或宿主。
 
 ```powershell
-cd src/fangyuan-agent
-npm run test:repo
-cd ../..
-python tools/media-staging/voice_focus_test.py
+npm run check
 git diff --cached --check
 node tools/audit-staged.mjs
 ```

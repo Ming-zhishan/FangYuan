@@ -62,3 +62,7 @@
 .vscode/
 .idea/
 .DS_Store
+
+# Reproducible module bundles are generated from tracked sources.
+/artifacts/
+**/runtime-tests/

@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import conversation from '../modules/conversation/index.mjs'
 import { removeTestDirectory } from './temp.mjs'
+import { loadRuntimeModule } from './runtime-bundle.mjs'
 
 function harness(t, module = conversation) {
   const dir = mkdtempSync(join(tmpdir(), 'fangyuan-turn-input-'))
@@ -30,7 +31,7 @@ function harness(t, module = conversation) {
 
 for (const [name, load] of [
   ['development', async () => conversation],
-  ['deployment mirror', async () => (await import('../../aurabot-modules/conversation/index.mjs')).default],
+  ['runtime artifact', async () => (await loadRuntimeModule('conversation/index.mjs')).default],
 ]) {
   test(`${name}: review and context keep the full merged input beyond the host tail`, async t => {
     const h = harness(t, await load())

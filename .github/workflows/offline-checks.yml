@@ -47,8 +47,7 @@ jobs:
           fi
           node tools/audit-range.mjs "$base" "$target"
       - name: Node offline tests
-        working-directory: src/fangyuan-agent
-        run: npm run test:repo
+        run: npm test
       - name: Python feedback gates
         run: python tools/media-staging/voice_focus_test.py
       - name: Dialogue and persona contracts
