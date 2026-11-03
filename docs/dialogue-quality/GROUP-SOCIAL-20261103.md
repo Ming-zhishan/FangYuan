@@ -2,7 +2,7 @@
 
 2026-11-03，用户要求提高主动参与、识别未@的名字和常见误写、嫌吵后自适应降频、感知禁言/解禁、聊天结尾不加标点；随后明确否决“每小时最多几次”的硬上限。后者覆盖本次早先提出的12次/小时方案，该方案没有上线。
 
-代码基线`396d22e`，本次实现`28dc55d`，独立分支`feature/group-social-awareness-20261103`，叠在完整人格分支上。**16:49:59 +08:00已获授权热更新conversation**：生产入口匹配本分支`src/aurabot-modules/conversation/`；仅增加`group-social.mjs`和修改`index.mjs`，保留该入口既有复核压缩、完整输入捕获、深交上下文及其他模块差异。未修改人物正文、好感库、管理员、网关、群名单或共享main。
+代码基线`396d22e`，本次实现`28dc55d`，独立分支`feature/group-social-awareness-20261103`，叠在完整人格分支上；[PR #21](https://github.com/Ming-zhishan/FangYuan/pull/21)已建立，未合并main。**16:49:59 +08:00已获授权热更新conversation**：生产入口匹配本分支`src/aurabot-modules/conversation/`；仅增加`group-social.mjs`和修改`index.mjs`，保留该入口既有复核压缩、完整输入捕获、深交上下文及其他模块差异。未修改人物正文、好感库、管理员、网关、群名单或共享main。
 
 ## 证实的问题与当前行为
 
