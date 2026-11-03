@@ -62,7 +62,7 @@ flowchart TD
 
 | 层次 | 已确认的内容 | 尚需确认的内容 |
 | --- | --- | --- |
-| 主分支代码与离线验证 | 上述核心机制及媒体暂存、审核门禁工具；本轮 `test:repo` 150 项通过 | 不能据此推断真人对话质量、生产发送或第三方服务可用性 |
+| 主分支代码与离线验证 | 上述核心机制及媒体暂存、审核门禁工具；离线检查范围与记录见[当前状态](docs/CURRENT_STATE.md) | 不能据此推断真人对话质量、生产发送或第三方服务可用性 |
 | 当前运行配置 | 只读核对：群白名单为空；复核、学习和主动回访配置启用；语音与表情启用且随机自动附加概率均为零 | 本轮未验证在线进程实际装载、真实发送或接收者体验 |
 | 对话研发 | [PR #5](https://github.com/Ming-zhishan/FangYuan/pull/5) 提供评测与交接；[PR #6](https://github.com/Ming-zhishan/FangYuan/pull/6) 修复完整连发与插话输入，记录其修复部分已单独部署 | 两者未合并；PR #6 的真实互动验收仍待观察，亲近与情绪表达试验默认关闭 |
 | 多媒体研发 | [PR #2](https://github.com/Ming-zhishan/FangYuan/pull/2)、[PR #3](https://github.com/Ming-zhishan/FangYuan/pull/3) 已合并离线暂存与证据门禁；[PR #4](https://github.com/Ming-zhishan/FangYuan/pull/4)、[PR #7](https://github.com/Ming-zhishan/FangYuan/pull/7) 已合并交接与精简试听工具 | 媒体工厂仍未合入主线；用户已有声音方向反馈，返工后的情绪与流畅度、图片认可、许可范围和指定私聊验收仍有缺口 |
@@ -115,7 +115,7 @@ cd src/fangyuan-agent
 npm run test:repo
 ```
 
-该入口要求 **Node.js 22.13+**，使用合成数据与隔离临时目录，不连接真实 QQ、云 API 或生产数据库。只验证方源模块可运行 `npm test`；媒体工具说明见[暂存与审核指南](tools/media-staging/README.md)。功能或修复改用仓库约定的 `feature/*`、`fix/*` 分支，多位协作者各用独立工作树。
+该入口要求 **Node.js 22.13+**，覆盖方源模块、媒体 Node 测试和[提交审计回归](tools/AUDIT_STAGED.md)，使用合成数据与隔离临时目录，不连接真实 QQ、云 API 或生产数据库。只验证方源模块可运行 `npm test`；媒体工具说明见[暂存与审核指南](tools/media-staging/README.md)。功能或修复改用仓库约定的 `feature/*`、`fix/*` 分支，多位协作者各用独立工作树。
 
 `npm run test:upstream` 需要额外提供经过核实的上游源码，部分专项检查还依赖本机语音环境，不属于默认测试入口。[现有实施记录](src/fangyuan-agent/IMPLEMENTATION.md)与[旧模块说明](src/fangyuan-agent/README.md)可帮助理解机制，但其中群聊、冷却、路径与测试数字属于历史记录，不能覆盖当前配置和新证据。
 
