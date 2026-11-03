@@ -1,6 +1,6 @@
 # 协作规范
 
-新成员先阅读[当前架构](docs/ARCHITECTURE.md)、[模块职责](docs/MODULE_OWNERS.md)和[工程状态与源码对应关系](docs/CURRENT_STATE.md)，确认实际调用方及任务可写范围。负责人尚未登记的共享模块，先在独立工作区准备说明，由用户或指定集成人员协调。
+新成员从[接任指南](docs/MAINTAINER_HANDOFF.md)进入，再阅读[当前架构](docs/ARCHITECTURE.md)、[模块职责](docs/MODULE_OWNERS.md)和[工程状态与源码对应关系](docs/CURRENT_STATE.md)，确认实际调用方及任务可写范围。负责人尚未登记的共享模块，先在独立工作区准备说明，由用户或指定集成人员协调。
 
 **多媒体开发必须先阅读 [多媒体工程铁则](docs/MEDIA_ENGINEERING_RULES.md)，并以实际验收证据与当前“仅私聊”安全边界为准。**
 
@@ -11,3 +11,4 @@
 5. 提交前运行 `node tools/audit-staged.mjs` 并人工复核全部暂存差异；工具读取 Git 暂存对象，不读取工作区替代内容，结果与限制见[审计说明](tools/AUDIT_STAGED.md)。生产部署需单独授权、备份和回滚计划。
 6. 不在 Git 中保存个人数据、真实 QQ 标识、聊天记录、凭证、私有绝对路径、未授权媒体或运行缓存。
 7. 当前尚无适用于全部源文件的统一再分发许可，未经来源和许可审查不得默认将第三方内容视为自由开源。
+8. 每个 PR 必须说明 README 是否受影响。影响能力、架构、进度、目录、命令或协作规则时，同步修改受影响章节及证据页；无影响则说明理由。遵循[维护方法](docs/README_MAINTENANCE.md)，通过[PR 模板](.github/pull_request_template.md)留下验证、限制、待办与下一接任入口，不能只在聊天中交付。
