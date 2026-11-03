@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
-import { mkdtempSync, mkdirSync, writeFileSync, unlinkSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, unlinkSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -30,7 +30,7 @@ function fixture(t, initialize = true, prefix = 'fangyuan-audit-test-') {
   const write = (name, text) => { mkdirSync(dirname(join(dir, name)), { recursive: true }); writeFileSync(join(dir, name), text) }
   const stage = (name, text) => { write(name, text); git(['add', '--', name]) }
   const audit = (cwd = dir, extraEnv = {}) => spawnSync(process.execPath, [script], { cwd, env: { ...env, ...extraEnv }, encoding: 'utf8', timeout: 30000 })
-  const range = (base, target) => spawnSync(process.execPath, [rangeScript, base, target], { cwd: dir, env, encoding: 'utf8', timeout: 30000 })
+  const range = (base, target, extraEnv = {}) => spawnSync(process.execPath, [rangeScript, base, target], { cwd: dir, env: { ...env, ...extraEnv }, encoding: 'utf8', timeout: 30000 })
   return { dir, git, write, stage, audit, range }
 }
 function expectExit(result, code, pattern) {
@@ -136,4 +136,14 @@ test('range audit rejects invalid revisions without changing repository state', 
   const f = fixture(t); const before = f.git(['status', '--porcelain'])
   expectExit(f.range('--invalid', 'HEAD'), 2, /Provide two full commit IDs/)
   assert.equal(f.git(['status', '--porcelain']), before)
+})
+test('range audit isolates inherited Git context and leaves an alternate index unchanged', t => {
+  const f = fixture(t); f.stage('sample.md', 'safe\n'); f.git(['commit', '--quiet', '-m', 'baseline'])
+  const base = f.git(['rev-parse', 'HEAD'])
+  f.stage('sample.md', marker); f.git(['commit', '--quiet', '-m', 'target'])
+  const alternate = join(f.dir, 'alternate-index'), original = readFileSync(join(f.dir, '.git/index'))
+  writeFileSync(alternate, original)
+  expectExit(f.range(base, f.git(['rev-parse', 'HEAD']), { GIT_DIR: join(f.dir, '.git'), GIT_WORK_TREE: f.dir, GIT_INDEX_FILE: alternate }), 1, /REVIEW CREDENTIAL/)
+  assert.deepEqual(readFileSync(alternate), original)
+  assert.deepEqual(readFileSync(join(f.dir, '.git/index')), original)
 })
