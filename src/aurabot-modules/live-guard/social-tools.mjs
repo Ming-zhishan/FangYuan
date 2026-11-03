@@ -3,13 +3,14 @@ import { createHash } from 'node:crypto'
 export function installSocialTools(api, { ready, permitted }) {
   const capabilities = (chat) => {
     const cfg = api.config(), owner = chat?.kind === 'private' && String(chat.userId) === String(cfg.ownerQQ)
+    const manager = owner || chat?.kind === 'private' && api.use('principals')?.isManager?.(String(chat.userId)) === true
     const admitted = cfg.enabled && ready() && (!chat?.chatId || permitted(chat.chatId))
     const writes = Object.fromEntries(['qqNickname', 'qqSignature', 'qqAvatar', 'qqFriendRequest'].map((k) => [k, Boolean(admitted && (cfg.profilePerms?.[k] === 'all' || (owner && (cfg.profilePerms?.[k] ?? 'owner') === 'owner')))]))
     const publicScene = owner || cfg.ext?.fangyuan?.publicRequestsFromAll === true
-    return { accountVerified: ready(), scene: chat?.kind, ownerConversation: owner,
+    return { accountVerified: ready(), scene: chat?.kind, ownerConversation: owner, managementRole: api.use('principals')?.roleOf?.(String(chat?.userId)) || (owner ? 'primary_owner' : 'visitor'),
       ordinaryGroupReply: { enabled: cfg.enabled && ready(), note: '在已接入群正常回复不依赖主动群发工具；收到@可直接进入会话。' },
-      groupDirectory: { tool: owner ? 'fy_group_directory' : null, available: owner && ready() },
-      directedGroupMessage: { tool: owner ? 'fy_send_group_message' : null, enabled: owner && ready() && cfg.ext?.liveGuard?.ownerGroupOutbound === true },
+      groupDirectory: { tool: manager ? 'fy_group_directory' : null, available: manager && ready() },
+      directedGroupMessage: { tool: manager ? 'fy_send_group_message' : null, enabled: manager && ready() && cfg.ext?.liveGuard?.ownerGroupOutbound === true },
       qzone: { tool: publicScene && api.use('diary') ? 'qq_send_qzone' : null, enabled: Boolean(admitted && publicScene && api.use('diary') && cfg.diary?.enabled && cfg.ext?.fangyuan?.publicActions === true), note: '已开放时可以考虑提议，也可按关系、场合和意愿拒绝；只有真实tid回执才可说已发布。' },
       profileWriteEnabled: writes, proactiveAddFriend: { available: false, note: '主动加好友未挂载；处理收到的好友申请是另一项权限。' },
       memory: Boolean(api.use('learning')), originalSearch: Boolean(api.use('lore')),
@@ -21,8 +22,8 @@ export function installSocialTools(api, { ready, permitted }) {
     if (!permitted(chat.chatId)) return []
     const result = [api.defineTool({ name: 'fy_capabilities', description: '读取当前会话真实可用能力和开关，区别已接入、未授权及未提供工具；不要凭历史回答猜。', execute: async () => ({ ok: permitted(chat.chatId), capabilities: permitted(chat.chatId) ? capabilities(chat) : null }) })]
     const cfg = api.config()
-    if (chat.kind !== 'private' || String(chat.userId) !== String(cfg.ownerQQ)) return result
-    const allowed = () => ready() && api.config().enabled && chat.kind === 'private' && String(chat.userId) === String(api.config().ownerQQ) && api.core.hub.turnSendersAllOwner(sessionId)
+    if (chat.kind !== 'private' || !(String(chat.userId) === String(cfg.ownerQQ) || api.use('principals')?.isManager?.(String(chat.userId)))) return result
+    const allowed = () => ready() && api.config().enabled && chat.kind === 'private' && ((String(chat.userId) === String(api.config().ownerQQ) && api.core.hub.turnSendersAllOwner(sessionId)) || api.use('principals')?.mayManage?.(chat, sessionId) === true)
     const directory = async () => {
       if (!allowed()) return { ok: false, groups: [], message: '当前操作者或账号未核实' }
       const rows = await api.core.onebot.call('get_group_list', { no_cache: true }, { timeoutMs: 7000, retries: 0 })

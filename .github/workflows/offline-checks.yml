@@ -51,3 +51,10 @@ jobs:
         run: npm run test:repo
       - name: Python feedback gates
         run: python tools/media-staging/voice_focus_test.py
+      - name: Dialogue and persona contracts
+        run: |
+          python -m unittest discover -s tools/dialogue-quality/scripts -p "test_*.py"
+          python tools/dialogue-quality/scripts/smoke.py
+          python tools/dialogue-quality/scripts/evaluate.py validate --cases tools/dialogue-quality/data/persona-cases.v1.jsonl
+          python tools/dialogue-quality/scripts/build_persona_core.py
+          python tools/dialogue-quality/scripts/verify_persona_sources.py
