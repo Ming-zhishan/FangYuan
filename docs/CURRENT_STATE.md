@@ -44,6 +44,18 @@
 
 ## 已执行检查
 
+### 后续研发与本包范围
+
+更晚的只读复核中，本包 51 个路径有 46 个匹配运行磁盘，API.md 为生成说明差异，另有 conversation/index、learning/history、learning/index、live-guard/social-tools 四个代码文件不同。同期对话负责人新增以下堆叠草稿，尚未纳入本次固定整合基线：
+
+| 工作 | 固定核对版本 | 交接报告与边界 |
+| --- | --- | --- |
+| [PR #21：群参与与禁言感知](https://github.com/Ming-zhishan/FangYuan/pull/21) | `8b8d816` | 报告 16:49 已更新 conversation 及配置，按用户决定取消次数配额；不是当前包行为 |
+| [PR #22：优先补读新缺口](https://github.com/Ming-zhishan/FangYuan/pull/22) | `df10348` | 报告 19:42 更新 learning 两文件；历史覆盖和自动补答语义分别验收 |
+| [PR #23：私聊与空间评论](https://github.com/Ming-zhishan/FangYuan/pull/23) | `1e1d70e` | 有后续恢复与有限回读记录，篇幅自然度等仍待反馈，保留独立研发范围 |
+
+这些变更继续由成果负责人维护，本次没有覆盖其代码或生产。runtime 是主线已采用基线的运行差异 profile，**不代表自动跟随当前生产**。后续迁入须按新源码路径和现有六处差异逐项回归；不能直接把本包覆盖运行实例，也不能把早期小时上限当作今天实际配置。
+
 - 基线整合：本机 Node 199 项、Python 契约 9 项及合成 smoke / 人物结构检查通过；CI 两平台成功。
 - 冷却恢复：Node 208 项通过，9 项新回归覆盖边界和实际模块入口；独立 Aurabot 1.1.13 副本的人格/业务管理员 2 项集成通过，使用假 DSH / OneBot。
 - 模块布局：构建专项 9 项与完整 Node 217 项、媒体 Python 5 项及评测 Python 9 项通过；runtime 的 51 文件迁移字节一致。后续选择新运行包的运维选项单独回归，最终结论以本批 CI 为准。

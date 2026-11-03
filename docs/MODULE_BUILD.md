@@ -43,6 +43,8 @@ npm run build:modules -- --profile development --out artifacts/development-modul
 
 包不是完整 Bot 安装，也不会复制文件到生产、重启或发送消息。宿主、实际配置、私有数据、原著库、正式媒体和发布/恢复授权另行交接。生产 API.md 可能由宿主再生成，仓库中的 API 是接口快照，不以文档哈希差异推断业务漂移。
 
+runtime 指当前已入库基线的运行差异，不是“自动追随生产”的别名。后续 PR #21–#23 尚未纳入，最新只读复核已发现四个运行代码文件不同，见[当前状态](CURRENT_STATE.md#后续研发与本包范围)。这些后续成果不得被旧包覆盖；迁入时应保留其授权与验收范围。
+
 ## 差异检查与后续维护
 
 `operations/check-source-drift.mjs` 默认用 `artifacts/runtime-modules/modules` 对比授权运行目录；可显式传 `--runtime-modules NEW_BUNDLE/modules` 比较本次新包。先确认包来源和内容摘要，再按[运维说明](../operations/README.md)检查；差异工具默认不写入、不自动同步。

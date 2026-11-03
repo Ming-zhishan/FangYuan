@@ -65,6 +65,7 @@ flowchart TD
 | 主分支代码与离线验证 | 上述核心机制及媒体暂存、审核门禁工具；离线检查范围与记录见[当前状态](docs/CURRENT_STATE.md) | 不能据此推断真人对话质量、生产发送或第三方服务可用性 |
 | 后续运行交接记录 | 业务管理员子集、授权群聊恢复已有交接记录；2026-11-03 12:06 完整人格及已确认的朋友定制已切换，用户确认成功，管理员与群私聊许可保留 | [固定记录与证据边界](docs/CURRENT_STATE.md#后续运行交接记录)另列；本轮未复核在线配置或收发，长期效果仍待观察 |
 | 对话研发 | 原 [PR #5](https://github.com/Ming-zhishan/FangYuan/pull/5) 的评测、交接及 [PR #6](https://github.com/Ming-zhishan/FangYuan/pull/6) 的输入修复已从固定来源纳入[整合基线](docs/INTEGRATION_BASELINE.md) | 原草稿 PR 未代为合并；真实互动继续观察，亲近与情绪表达试验默认关闭 |
+| 后续对话工作 | [PR #21](https://github.com/Ming-zhishan/FangYuan/pull/21)、[PR #22](https://github.com/Ming-zhishan/FangYuan/pull/22)、[PR #23](https://github.com/Ming-zhishan/FangYuan/pull/23) 继续群参与、历史补读及私聊/空间恢复 | 尚未纳入当前包，部分有单独部署报告；当前源码包不能直接覆盖运行实例，见[范围](docs/CURRENT_STATE.md#后续研发与本包范围) |
 | 管理员与人格研发 | 原 [PR #11](https://github.com/Ming-zhishan/FangYuan/pull/11) 的身份/管理模块与 [PR #13](https://github.com/Ming-zhishan/FangYuan/pull/13) 已验收完整人格及配套测试已纳入研发基线 | 公共模板默认关闭；源码包含、原 PR 状态和限定生产组合分别判断，不能整套覆盖 |
 | 多媒体研发 | [PR #2](https://github.com/Ming-zhishan/FangYuan/pull/2)、[PR #3](https://github.com/Ming-zhishan/FangYuan/pull/3) 已合并离线暂存与证据门禁；[PR #4](https://github.com/Ming-zhishan/FangYuan/pull/4)、[PR #7](https://github.com/Ming-zhishan/FangYuan/pull/7) 已合并交接与精简试听工具 | 媒体工厂仍未合入主线；用户已有声音方向反馈，返工后的情绪与流畅度、图片认可、许可范围和指定私聊验收仍有缺口 |
 | 协作与工程整理 | 已建立基础源码、运行差异、独立构建与来源清单；main 要求 PR 和双平台检查 | 接口、历史工具及接任人员仍继续整理；[接任指南](docs/MAINTAINER_HANDOFF.md)列明剩余条件 |
