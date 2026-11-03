@@ -9,7 +9,7 @@ import { groupSocial,stripTerminalPunctuation,nameAttention } from '../modules/c
 function harness(t) {
   const dir=mkdtempSync(join(tmpdir(),'fy-group-social-'));t.after(()=>rmSync(dir,{recursive:true,force:true}))
   const hooks={},contexts=[],cfg={enabled:true,botQQ:'200001',ownerQQ:'100001',allow:{groups:['300001'],private:['100001']},group:{quietHours:[1,8]},ext:{conversation:{pacingEnabled:true,socialEnabled:true,stripTerminalPunctuation:true,reviewEnabled:false,ordinaryCooldownSec:120,maxOrdinaryPerHour:12}}}
-  const rows=[],counts={last:0,turns:0},learning={permitted:()=>true,store:{conversationFrame:()=>rows,db:{prepare:()=>({get:()=>({at:counts.last}),all:()=>Array.from({length:counts.turns},(_,i)=>({at:Date.now()-i*20000}))})}}}
+  const rows=[],counts={last:0,turns:0},learning={permitted:()=>true,store:{conversationFrame:()=>rows,db:{prepare:()=>({get:()=>({at:counts.last}),all:()=>Array.from({length:counts.turns},(_,i)=>({at:Date.now()-(counts.turns-i)*20000}))})}}}
   const api={config:()=>cfg,dataDir:n=>join(dir,n),on:(k,f)=>(hooks[k]??=[]).push(f),context:f=>contexts.push(f),route(){},rule(){},log:{warn(){}},use:k=>k==='learning'?learning:null,core:{hub:{}}}
   const service=conversation.setup(api)
   const emit=async(k,...args)=>{for(const f of hooks[k]||[])await f(...args)}
