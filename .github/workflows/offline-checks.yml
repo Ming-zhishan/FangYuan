@@ -1,0 +1,53 @@
+name: Offline checks
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline:
+    name: offline-${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Audit the complete change range
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_BASE: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            base=$(git merge-base "$PR_BASE" "$PR_HEAD")
+            target="$PR_HEAD"
+          elif [ "$EVENT" = push ]; then
+            base="$PUSH_BASE"
+            target=$(git rev-parse HEAD)
+          else
+            base=$(git rev-parse HEAD^)
+            target=$(git rev-parse HEAD)
+          fi
+          node tools/audit-range.mjs "$base" "$target"
+      - name: Node offline tests
+        working-directory: src/fangyuan-agent
+        run: npm run test:repo
+      - name: Python feedback gates
+        run: python tools/media-staging/voice_focus_test.py
