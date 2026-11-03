@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const script = fileURLToPath(new URL('./check-source-drift.mjs', import.meta.url))
-const sourceDirs = ['src/fangyuan-agent', 'src/aurabot-modules', 'src/qq-bootstrap']
+const sourceDirs = ['src/fangyuan-agent', 'artifacts/runtime-modules/modules', 'src/qq-bootstrap']
 const liveDirs = ['operations/legacy-tools/fangyuan-dsh', 'runtime/dsh-live/aurabot/modules', 'runtime/qq-stack/setup']
 function fixture(t, populate = true) {
   const temporary = fs.mkdtempSync(path.join(tmpdir(), 'fangyuan-drift-test-'))
@@ -176,5 +176,16 @@ test('help is available without a runtime and causes no writes', t => {
   const f = fixture(t, false), before = snapshot(f.root), result = f.run('--help')
   assert.equal(result.status, 0)
   assert.match(result.stdout, /no file writes/)
+  assert.deepEqual(snapshot(f.root), before)
+})
+
+test('an explicit runtime bundle selects that source without writing or exposing its absolute path', t => {
+  const f = fixture(t)
+  f.write('new-bundle/modules/same.txt', 'synthetic\n')
+  f.write(sourceDirs[1] + '/only-old-bundle.txt', 'old')
+  const before = snapshot(f.root), result = f.run('--runtime-modules', path.join(f.root, 'new-bundle/modules'))
+  assert.equal(result.status, 0)
+  assert.deepEqual(result.data.comparisons[1].missingInLive, [])
+  assert.equal(result.data.comparisons[1].sourceFiles, 1)
   assert.deepEqual(snapshot(f.root), before)
 })

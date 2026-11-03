@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 const root = fileURLToPath(new URL('../', import.meta.url))
 const trees = [
   { label: 'agent', source: 'src/fangyuan-agent', live: 'operations/legacy-tools/fangyuan-dsh' },
-  { label: 'aurabot', source: 'src/aurabot-modules', live: 'runtime/dsh-live/aurabot/modules' },
+  { label: 'aurabot', source: 'artifacts/runtime-modules/modules', live: 'runtime/dsh-live/aurabot/modules' },
   { label: 'qq-bootstrap', source: 'src/qq-bootstrap', live: 'runtime/qq-stack/setup' }
 ]
 const ignored = new Set(['.git', 'node_modules', '__pycache__', '.venv', 'backups', 'logs', 'modules-data', '.aurabot-cache'])
@@ -35,16 +35,21 @@ const sha = file => crypto.createHash('sha256').update(fs.readFileSync(file)).di
 try {
   const args = process.argv.slice(2)
   if (args.length === 1 && args[0] === '--help') {
-    console.log('Usage: node operations/check-source-drift.mjs [--report NEW_FILE]\nDefault: JSON on stdout, no file writes. Differences are informational. Missing or unreadable inputs exit 2.')
+    console.log('Usage: node operations/check-source-drift.mjs [--runtime-modules BUNDLE_MODULES] [--report NEW_FILE]\nDefault: JSON on stdout, no file writes. Differences are informational. Missing or unreadable inputs exit 2.')
   } else {
-    if (args.length && (args.length !== 2 || args[0] !== '--report' || !args[1] || args[1].startsWith('--'))) fail('invalid_arguments')
-    const report = args.length ? path.resolve(args[1]) : null
+    const options = {}
+    for (let i = 0; i < args.length; i += 2) {
+      if (!['--report', '--runtime-modules'].includes(args[i]) || !args[i + 1] || args[i + 1].startsWith('--') || Object.hasOwn(options, args[i])) fail('invalid_arguments')
+      options[args[i]] = args[i + 1]
+    }
+    const report = options['--report'] ? path.resolve(options['--report']) : null
+    if (options['--runtime-modules']) trees.find(x => x.label === 'aurabot').source = path.resolve(options['--runtime-modules'])
     const roots = []
     const unavailable = []
     for (const tree of trees) {
       for (const side of ['source', 'live']) {
         try {
-          const directory = path.join(root, tree[side])
+          const directory = path.resolve(root, tree[side])
           if (!fs.statSync(directory).isDirectory()) throw Error()
           roots.push(fs.realpathSync(directory))
         } catch { unavailable.push({ label: tree.label, side }) }
@@ -59,7 +64,7 @@ try {
       if (roots.some(directory => inside(directory, target))) fail('report_inside_compared_tree')
     }
     for (const tree of trees) {
-      const source = path.join(root, tree.source), live = path.join(root, tree.live)
+      const source = path.resolve(root, tree.source), live = path.resolve(root, tree.live)
       const sourceFiles = files(source), liveFiles = files(live)
       const sourceSet = new Set(sourceFiles), liveSet = new Set(liveFiles)
       const missing = sourceFiles.filter(name => !liveSet.has(name))

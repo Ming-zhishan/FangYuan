@@ -65,9 +65,10 @@ flowchart TD
 | 主分支代码与离线验证 | 上述核心机制及媒体暂存、审核门禁工具；离线检查范围与记录见[当前状态](docs/CURRENT_STATE.md) | 不能据此推断真人对话质量、生产发送或第三方服务可用性 |
 | 后续运行交接记录 | 业务管理员子集、授权群聊恢复已有交接记录；2026-11-03 12:06 完整人格及已确认的朋友定制已切换，用户确认成功，管理员与群私聊许可保留 | [固定记录与证据边界](docs/CURRENT_STATE.md#后续运行交接记录)另列；本轮未复核在线配置或收发，长期效果仍待观察 |
 | 对话研发 | 原 [PR #5](https://github.com/Ming-zhishan/FangYuan/pull/5) 的评测、交接及 [PR #6](https://github.com/Ming-zhishan/FangYuan/pull/6) 的输入修复已从固定来源纳入[整合基线](docs/INTEGRATION_BASELINE.md) | 原草稿 PR 未代为合并；真实互动继续观察，亲近与情绪表达试验默认关闭 |
+| 后续对话工作 | [PR #21](https://github.com/Ming-zhishan/FangYuan/pull/21)、[PR #22](https://github.com/Ming-zhishan/FangYuan/pull/22)、[PR #23](https://github.com/Ming-zhishan/FangYuan/pull/23) 继续群参与、历史补读及私聊/空间恢复 | 尚未纳入当前包，部分有单独部署报告；当前源码包不能直接覆盖运行实例，见[范围](docs/CURRENT_STATE.md#后续研发与本包范围) |
 | 管理员与人格研发 | 原 [PR #11](https://github.com/Ming-zhishan/FangYuan/pull/11) 的身份/管理模块与 [PR #13](https://github.com/Ming-zhishan/FangYuan/pull/13) 已验收完整人格及配套测试已纳入研发基线 | 公共模板默认关闭；源码包含、原 PR 状态和限定生产组合分别判断，不能整套覆盖 |
 | 多媒体研发 | [PR #2](https://github.com/Ming-zhishan/FangYuan/pull/2)、[PR #3](https://github.com/Ming-zhishan/FangYuan/pull/3) 已合并离线暂存与证据门禁；[PR #4](https://github.com/Ming-zhishan/FangYuan/pull/4)、[PR #7](https://github.com/Ming-zhishan/FangYuan/pull/7) 已合并交接与精简试听工具 | 媒体工厂仍未合入主线；用户已有声音方向反馈，返工后的情绪与流畅度、图片认可、许可范围和指定私聊验收仍有缺口 |
-| 协作与工程整理 | 已建立架构、职责、来源记录；main 已要求通过 PR 和 Windows / Linux 离线检查 | 两套模块尚未统一，平台与数据主责任人待登记；[接任指南](docs/MAINTAINER_HANDOFF.md)列明剩余交接条件 |
+| 协作与工程整理 | 已建立基础源码、运行差异、独立构建与来源清单；main 要求 PR 和双平台检查 | 接口、历史工具及接任人员仍继续整理；[接任指南](docs/MAINTAINER_HANDOFF.md)列明剩余条件 |
 | 未来方向 | 更自然的连续互动、更可靠的关系与记忆表现，以及逐步探索文字玩法 | 炼蛊、仙道杀招等互动玩法属于产品方向，本次未确认有已验收成品 |
 
 语音链路有历史私聊播放反馈记录，但普通 TTS 不等于目标角色音色，旧记录也不能证明新语音包已通过验收。当前没有适合本次新增公开展示的已核授权素材，因此首页暂不放对话截图或媒体样品。
@@ -79,7 +80,7 @@ flowchart TD
 | 组件 | 职责 | 从哪里了解 |
 | --- | --- | --- |
 | Node.js 22.13+ / JavaScript ESM | 自定义模块、离线测试与工具运行 | [模块与测试基线](src/fangyuan-agent/) |
-| DSH NEXT + Aurabot | 智能体宿主、QQ 适配和扩展接口；本仓库不包含完整宿主安装包 | [模块 API 快照](src/aurabot-modules/API.md) |
+| DSH NEXT + Aurabot | 智能体宿主、QQ 适配和扩展接口；本仓库不包含完整宿主安装包 | [模块 API 快照](src/aurabot-runtime-overrides/API.md) |
 | NapCat / OneBot v11 | QQ 消息收发与回执 | [固定上游集成测试](src/fangyuan-agent/integration/) |
 | SQLite / JSON | 学习档案、原著查询、来源和任务状态持久化 | [学习模块](src/fangyuan-agent/modules/learning/) · [记忆模块](src/fangyuan-agent/modules/memory/) |
 | Ollama / 云端模型网关 | 模型推理及相关路由、用量保护 | [网关源码](src/qq-bootstrap/cloud_gateway.py) · [模型适配](src/fangyuan-agent/modules/learning/model.mjs) |
@@ -91,7 +92,9 @@ src/fangyuan-agent/
   modules/           人格、记忆、学习、检索、复核和媒体扩展
   test/              默认离线测试
   integration/       依赖固定上游源码或本机语音环境的专项测试
-src/aurabot-modules/  独立模块快照，与研发基线存在有意镜像及差异
+src/aurabot-runtime-overrides/  六处运行差异及运行独有支持文件
+src/aurabot-modules/  旧入口导航，不再维护第二套完整模块
+artifacts/           按需生成的独立模块包与来源清单，不入 Git
 src/qq-bootstrap/    历史工具与仍可复用的网关代码
 tools/media-staging/ 离线媒体候选暂存与证据审核
 config/              相对路径映射和配置模板
@@ -99,7 +102,7 @@ docs/                安全、架构历史及维护依据
 operations/          本机布局检查、默认只输出的来源差异检查及合成回归
 ```
 
-自定义扩展复用第三方宿主与原生能力，例如语音和表情模块通过 Aurabot 接口适配。两套模块快照的目录代表不同装载语义，修改前应确认实际调用方与同步范围，不能仅凭文件相似合并或删除。
+自定义扩展复用第三方宿主与原生能力，例如语音和表情模块通过 Aurabot 接口适配。共享实现只维护一份；运行差异显式保留在覆盖目录，再生成可独立装载的模块包。此次去除了 39 份共享副本，运行包 51 个模块文件与整理前逐项 LF 字节一致，见[构建与迁移说明](docs/MODULE_BUILD.md)。
 
 ## 开发入口
 
@@ -115,11 +118,12 @@ operations/          本机布局检查、默认只输出的来源差异检查�
 git clone https://github.com/Ming-zhishan/FangYuan.git
 cd FangYuan
 git switch -c docs/your-topic
-cd src/fangyuan-agent
-npm run test:repo
+npm run check
 ```
 
-该入口要求 **Node.js 22.13+**，覆盖方源模块、媒体 Node 测试和[提交审计回归](tools/AUDIT_STAGED.md)，使用合成数据与隔离临时目录，不连接真实 QQ、云 API 或生产数据库。只验证方源模块可运行 `npm test`；媒体工具说明见[暂存与审核指南](tools/media-staging/README.md)。功能或修复改用仓库约定的 `feature/*`、`fix/*` 分支，多位协作者各用独立工作树。
+该入口使用合成数据与隔离临时目录，覆盖方源模块、运行包、媒体及[提交审计回归](tools/AUDIT_STAGED.md)，不连接真实 QQ、云 API 或生产数据库。媒体工具见[暂存与审核指南](tools/media-staging/README.md)。功能或修复使用 `feature/*`、`fix/*` 分支，多位协作者各用独立工作树。
+
+根目录的 `npm run check` 还要求 **Python 3.12 和 Git**，包含 Node、Python、评测契约及人物同步；根 `npm test` 执行 Node 检查，原 `src/fangyuan-agent` 下的命令继续兼容。没有外部 npm 依赖，无需先安装模型或登录 QQ。运行 `npm run build:modules` 默认只核对并输出计划；加 `--profile runtime --out artifacts/runtime-modules` 才生成新包，不覆盖已有输出。新源码先暂存再构建，详细规则见[模块构建](docs/MODULE_BUILD.md)。
 
 默认检查还覆盖[源码差异工具的合成回归](operations/README.md)，不会读取真实运行目录。实际差异检查仅供获授权的本机维护使用：默认只输出结果，显式 `--report` 才新建报告，不覆盖既有文件；缺失运行目录会明确失败。其他布局检查仍有写报告与端口探测行为。
 

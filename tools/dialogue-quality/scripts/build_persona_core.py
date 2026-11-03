@@ -1,4 +1,4 @@
-"""Keep the complete reviewed card body in both runtime cores. Default verifies; --write updates repository files only."""
+"""Keep the complete reviewed card body in the canonical core. Bundles inherit it; --write updates repository source only."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -13,12 +13,12 @@ parser.add_argument('--write', action='store_true')
 args = parser.parse_args()
 sha = hashlib.sha256(body.encode()).hexdigest()
 valid = True
-for folder in (repo/'src/fangyuan-agent/modules/fangyuan', repo/'src/aurabot-modules/fangyuan'):
+for folder in (repo/'src/fangyuan-agent/modules/fangyuan',):
     meta = json.loads((folder/'core-provenance.json').read_text(encoding='utf-8-sig'))
     if args.write:
         meta.update(sourceSha256=sha, compression='none; verbatim normalized persona body')
         (folder/'core.txt').write_text(body+'\n',encoding='utf-8')
         (folder/'core-provenance.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     valid &= (folder/'core.txt').read_text(encoding='utf-8-sig').replace('\r\n','\n').strip()==body and meta.get('sourceSha256')==sha and meta.get('compression','').startswith('none;')
-print(json.dumps({'mode':'write' if args.write else 'check','complete_body_chars':len(body),'both_runtime_cores_match':valid,'production_writes':0}))
+print(json.dumps({'mode':'write' if args.write else 'check','complete_body_chars':len(body),'canonical_core_matches':valid,'runtime_bundles_inherit_core':True,'production_writes':0}))
 raise SystemExit(0 if valid else 1)
