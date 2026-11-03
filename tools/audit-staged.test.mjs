@@ -7,6 +7,7 @@ import { basename, dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const script = fileURLToPath(new URL('./audit-staged.mjs', import.meta.url))
+const rangeScript = fileURLToPath(new URL('./audit-range.mjs', import.meta.url))
 // Generated scanner markers only; no account data, private files or credentials.
 const marker = 'sk-' + 'a'.repeat(24)
 const env = { ...process.env }
@@ -29,7 +30,8 @@ function fixture(t, initialize = true, prefix = 'fangyuan-audit-test-') {
   const write = (name, text) => { mkdirSync(dirname(join(dir, name)), { recursive: true }); writeFileSync(join(dir, name), text) }
   const stage = (name, text) => { write(name, text); git(['add', '--', name]) }
   const audit = (cwd = dir, extraEnv = {}) => spawnSync(process.execPath, [script], { cwd, env: { ...env, ...extraEnv }, encoding: 'utf8', timeout: 30000 })
-  return { dir, git, write, stage, audit }
+  const range = (base, target) => spawnSync(process.execPath, [rangeScript, base, target], { cwd: dir, env, encoding: 'utf8', timeout: 30000 })
+  return { dir, git, write, stage, audit, range }
 }
 function expectExit(result, code, pattern) {
   assert.equal(result.status, code, result.stdout + result.stderr)
@@ -112,4 +114,26 @@ test('a missing staged object is an operational error, never a clean audit', t =
   const f = fixture(t)
   f.git(['update-index', '--add', '--cacheinfo', '100644,' + '1'.repeat(40) + ',missing.md'])
   expectExit(f.audit(), 2, /Cannot audit staged files/)
+})
+test('range audit checks new changes without rescanning inherited legacy contents', t => {
+  const f = fixture(t); f.stage('legacy.md', marker); f.git(['commit', '--quiet', '-m', 'baseline'])
+  const base = f.git(['rev-parse', 'HEAD'])
+  f.stage('new.md', 'safe\n'); f.git(['commit', '--quiet', '-m', 'target'])
+  const before = f.git(['worktree', 'list', '--porcelain'])
+  expectExit(f.range(base, f.git(['rev-parse', 'HEAD'])), 0)
+  assert.equal(f.git(['worktree', 'list', '--porcelain']), before)
+})
+test('range audit catches committed contents and preserves the callers working tree and index', t => {
+  const f = fixture(t); f.stage('sample.md', 'safe\n'); f.git(['commit', '--quiet', '-m', 'baseline'])
+  const base = f.git(['rev-parse', 'HEAD'])
+  f.stage('sample.md', marker); f.git(['commit', '--quiet', '-m', 'target']); f.write('sample.md', 'unstaged\n')
+  const before = f.git(['status', '--porcelain']), views = f.git(['worktree', 'list', '--porcelain'])
+  expectExit(f.range(base, f.git(['rev-parse', 'HEAD'])), 1, /REVIEW CREDENTIAL/)
+  assert.equal(f.git(['status', '--porcelain']), before)
+  assert.equal(f.git(['worktree', 'list', '--porcelain']), views)
+})
+test('range audit rejects invalid revisions without changing repository state', t => {
+  const f = fixture(t); const before = f.git(['status', '--porcelain'])
+  expectExit(f.range('--invalid', 'HEAD'), 2, /Provide two full commit IDs/)
+  assert.equal(f.git(['status', '--porcelain']), before)
 })
