@@ -89,6 +89,10 @@
     "live-guard": {
       "enabled": true,
       "useBuiltin": false
+    },
+    "principals": {
+      "enabled": false,
+      "useBuiltin": false
     }
   },
   "ext": {
@@ -129,6 +133,12 @@
       "ownerOutbound": false,
       "ownerGroupOutbound": false,
       "legacyModePath": ""
+    },
+    "principals": {
+      "enabled": false,
+      "businessAdmins": [],
+      "friendship": "",
+      "allyAttention": false
     }
   }
 }

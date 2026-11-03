@@ -57,8 +57,8 @@ export default {
     api.on('prompt', (content, { chat } = {}) => settings().enforce && !permitted(chat?.chatId) ? null : content)
     api.on('send', (message, { chatId }) => settings().enforce && !permitted(chatId) ? null : message)
     api.tool(({ chat, sessionId }) => {
-      if (!settings().enforce || settings().ownerOutbound !== true || chat.kind !== 'private' || String(chat.userId) !== String(api.config().ownerQQ)) return []
-      const allowedOwner = () => ready() && settings().ownerOutbound === true && api.config().enabled && String(chat.userId) === String(api.config().ownerQQ) && api.core.hub.turnSendersAllOwner(sessionId)
+      if (!settings().enforce || settings().ownerOutbound !== true || chat.kind !== 'private' || !(String(chat.userId) === String(api.config().ownerQQ) || api.use('principals')?.isManager?.(String(chat.userId)))) return []
+      const allowedOwner = () => ready() && settings().ownerOutbound === true && api.config().enabled && ((String(chat.userId) === String(api.config().ownerQQ) && api.core.hub.turnSendersAllOwner(sessionId)) || api.use('principals')?.mayManage?.(chat, sessionId) === true)
       return [
         api.defineTool({ name: 'fy_friend_directory', description: '只列机器人当前已验证好友的QQ号；不读取这些人的聊天。发私信前核对真实对象，不凭名字猜账号。',
           execute: async () => allowedOwner() ? { ok: true, friends: [...friends] } : { ok: false, message: '当前身份或账号未核实' } }),
