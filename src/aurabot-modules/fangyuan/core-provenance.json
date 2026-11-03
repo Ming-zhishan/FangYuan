@@ -1,8 +1,0 @@
-{
-  "sourceSha256": "db27074c47bd2ac028a80f47fb7b377bd0dac903a33c676562e2aced3ba89d9a",
-  "source": "gu-yue-fang-yuan.md",
-  "compiledCore": true,
-  "compression": "none; verbatim normalized persona body",
-  "version": "canon-candidate-20261103",
-  "evidence": "tools/dialogue-quality/data/persona-evidence.v1.json"
-}

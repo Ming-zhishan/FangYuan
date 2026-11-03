@@ -41,8 +41,8 @@ test('splitting is opt-in and collapses back to one message when unverified', ()
 test('punctuation habit holds whether or not splitting is on', () => {
   for (const splitReplies of [false, true]) {
     const prompt = conversationReviewPrompt({ userText: '在吗', draft: '在。', scene: 'group', recent: [], splitReplies })
-    assert.match(prompt, /句末句号可以去掉/)
-    assert.match(prompt, /问号必须保留/)
+    assert.match(prompt, /消息结尾不加标点/)
+    assert.match(prompt, /问句用措辞表达/); assert.match(prompt, /内部标点、代码、网址与准确数据保留/)
   }
 })
 

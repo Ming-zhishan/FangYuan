@@ -50,7 +50,7 @@ mkdirSync(dirname(out),{recursive:true})
 cpSync(source,out,{recursive:true,filter:p=>!relative(source,p).split(/[\\/]/).some(x=>['node_modules','.git','.aurabot-cache'].includes(x))})
 if(existsSync(join(source,'node_modules')))symlinkSync(join(source,'node_modules'),join(out,'node_modules'),'junction')
 for(const [name,text] of changes)writeFileSync(join(out,name),text)
-writeFileSync(join(out,'src/chat/principal-policy.js'),readFileSync(join(repo,'src/aurabot-modules/principals/policy.mjs')))
+writeFileSync(join(out,'src/chat/principal-policy.js'),readFileSync(join(repo,'src/fangyuan-agent/modules/principals/policy.mjs')))
 const sha=p=>createHash('sha256').update(readFileSync(p)).digest('hex')
 const manifest={source,productionWrites:0,changed:[...changes.keys(),'src/chat/principal-policy.js'].map(name=>({name,before:sha(join(source,name)),after:sha(join(out,name))})),scope:'explicit co-owners; groups retain social level; notification defaults stay primary owner'}
 writeFileSync(join(out,'co-owner-preparation.json'),JSON.stringify(manifest,null,2))

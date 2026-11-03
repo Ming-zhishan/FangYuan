@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { canAutonomouslyConsiderDiary } from './diary-policy.mjs'
 
 /** Public composition receives the proposed material and a numeric attitude, never a chat transcript. */
 export default {
@@ -32,6 +33,9 @@ export default {
         const requestKey = request ? createHash('sha256').update(request.chat.chatId + '|' + (source?.id || request.sessionId)).digest('hex') : null
         if (requestKey && rows.some((r) => r.requestKey === requestKey && ['attempted', 'sent', 'unknown'].includes(r.status))) return { ok: false, sent: false, message: '同一条真实提议已经尝试发布；先核对结果，不重复发布' }
         if (!request) {
+          // Enforce multi-day cooldown independently of Aurabot's 24-hour built-in interval clamp.
+          if (!canAutonomouslyConsiderDiary(rows, now, cfg.ext?.diary?.autonomousCooldownDays))
+            return { ok: true, sent: false, message: '自主动态处于长周期冷却期' }
           const auto = rows.filter((r) => r.mode !== 'request')
           const attempts = auto.filter((r) => r.status === 'attempted' && now - r.at < 86400000)
           if (attempts.length >= Math.max(0, Number(cfg.diary.timesPerDay) || 0)) return { ok: true, sent: false, message: '今日主动动态次数已够；仍可考虑新的明确提议' }
