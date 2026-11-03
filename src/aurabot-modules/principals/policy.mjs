@@ -1,13 +1,21 @@
 const valid = value => typeof value === 'string' && /^[1-9]\d{4,11}$/.test(value)
 const settings = cfg => cfg.ext?.principals || {}
+export function coOwners(cfg) {
+  if (settings(cfg).enabled !== true) return []
+  const values = settings(cfg).coOwners
+  return [...new Set((Array.isArray(values) ? values : []).filter(valid))].filter(uid => uid !== String(cfg.ownerQQ) && uid !== String(cfg.botQQ))
+}
+export const fullOwners = cfg => [...new Set([...(valid(cfg.ownerQQ) && cfg.ownerQQ !== String(cfg.botQQ) ? [cfg.ownerQQ] : []), ...coOwners(cfg)])]
+export const isFullOwner = (cfg, uid) => valid(uid) && fullOwners(cfg).includes(uid)
 export function businessAdmins(cfg) {
   if (settings(cfg).enabled !== true) return []
   const values = settings(cfg).businessAdmins
-  return [...new Set((Array.isArray(values) ? values : []).filter(valid))].filter(uid => uid !== String(cfg.ownerQQ) && uid !== String(cfg.botQQ))
+  return [...new Set((Array.isArray(values) ? values : []).filter(valid))].filter(uid => !isFullOwner(cfg, uid) && uid !== String(cfg.botQQ))
 }
 export function roleOf(cfg, uid) {
   if (!valid(uid) || uid === String(cfg.botQQ)) return 'visitor'
   if (uid === String(cfg.ownerQQ)) return 'primary_owner'
+  if (coOwners(cfg).includes(uid)) return 'co_owner'
   return businessAdmins(cfg).includes(uid) ? 'business_admin' : 'visitor'
 }
 export const isManager = (cfg, uid) => roleOf(cfg, uid) !== 'visitor'

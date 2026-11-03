@@ -1,11 +1,11 @@
 import { readFileSync } from 'node:fs'
-import { roleOf, businessAdmins, isManager, declaredBond, relationshipFrame, allyAttention } from './policy.mjs'
+import { roleOf, businessAdmins, coOwners, isFullOwner, isManager, declaredBond, relationshipFrame, allyAttention } from './policy.mjs'
 const policy = readFileSync(new URL('./relationship-policy.txt', import.meta.url), 'utf8').trim()
 
 export default {
   id: 'principals', name: '管理身份与亲密伙伴', api: 1, version: '0.1.0',
-  description: '配置绑定管理身份与声明关系，账号分离，不授予业务管理员电脑工具。',
-  defaults: { enabled: false, businessAdmins: [], friendship: '', allyAttention: false },
+  description: '配置绑定管理身份与声明关系，账号分离，支持显式共同所有者，普通业务管理员仍无电脑工具。',
+  defaults: { enabled: false, businessAdmins: [], coOwners: [], friendship: '', allyAttention: false },
   setup(api) {
     const role = uid => roleOf(api.config(), String(uid))
     const enabled = () => api.config().ext?.principals?.enabled === true
@@ -43,15 +43,15 @@ export default {
       return allyAttention(decision, msg, { cfg, addressedUids: [...addressed, ...(quoted ? [quoted] : [])], permitted: true, lastDeliveredAt: last, ordinaryTurns: turns })
     })
     const help = msg => {
-      const own = role(msg.userId) === 'primary_owner'
-      return `${own ? '主要宿主：保留原有电脑权限档位' : 'Bot业务管理员：不含电脑/文件/终端权限'}\n可直接用 /status、/model、/silent 10、/active、/off、/on、/reset；/off关闭Bot总开关，/on恢复。/model无参数先查看，切换前核对会话路由。\n${declaredBond(api.config(), String(msg.userId)) ? '你是已确认的深厚朋友，关系不靠反复自证；' : ''}管理身份不代表共享其他人的私聊。`
+      const own = isFullOwner(api.config(), String(msg.userId))
+      return `${own ? '所有者：拥有与原宿主相同的电脑权限档位' : 'Bot业务管理员：不含电脑/文件/终端权限'}\n可直接用 /status、/model、/silent 10、/active、/off、/on、/reset；/off关闭Bot总开关，/on恢复。/model无参数先查看，切换前核对会话路由。\n${declaredBond(api.config(), String(msg.userId)) ? '你是已确认的深厚朋友，关系不靠反复自证；' : ''}管理身份不代表共享其他人的私聊。`
     }
     api.command({ name: 'admin', aliases: ['管理', '权限'], desc: '查看自己的实际管理角色与直接命令', run: async (_arg, msg) => {
       const chat = { ...msg, kind: msg.kind || (String(msg.chatId).startsWith('private:') ? 'private' : 'group') }
       return chat.kind === 'private' && admitted(chat) && isManager(api.config(), String(msg.userId)) ? help(msg) : '当前会话没有管理权限。'
     } })
-    api.route('/state', async () => ({ ok: true, enabled: enabled(), businessAdminCount: businessAdmins(api.config()).length, friendship: api.config().ext?.principals?.friendship || '', nativeBusinessCommands: api.core.hub.supportsBusinessAdministration === true, computerAuthority: 'unchanged_primary_owner_only' }))
-    return { roleOf: role, isManager: uid => enabled() && isManager(api.config(), String(uid)), mayManage,
+    api.route('/state', async () => ({ ok: true, enabled: enabled(), businessAdminCount: businessAdmins(api.config()).length, friendship: api.config().ext?.principals?.friendship || '', nativeBusinessCommands: api.core.hub.supportsBusinessAdministration === true, coOwnerCount: coOwners(api.config()).length, nativeCoOwners: api.core.hub.supportsCoOwners === true, computerAuthority: 'explicit_owners_same_level' }))
+    return { roleOf: role, isFullOwner: uid => isFullOwner(api.config(), String(uid)), isManager: uid => enabled() && isManager(api.config(), String(uid)), mayManage,
       contextFor: (chat, rows = [], speakers = []) => admitted(chat) ? relationshipFrame(api.config(), chat, rows, speakers) : null,
       contextText, policy: () => enabled() ? policy : '' }
   },

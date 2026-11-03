@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 
 export function installSocialTools(api, { ready, permitted }) {
   const capabilities = (chat) => {
-    const cfg = api.config(), owner = chat?.kind === 'private' && String(chat.userId) === String(cfg.ownerQQ)
+    const cfg = api.config(), owner = chat?.kind === 'private' && (String(chat.userId) === String(cfg.ownerQQ) || api.use('principals')?.isFullOwner?.(String(chat.userId)) === true)
     const manager = owner || chat?.kind === 'private' && api.use('principals')?.isManager?.(String(chat.userId)) === true
     const admitted = cfg.enabled && ready() && (!chat?.chatId || permitted(chat.chatId))
     const writes = Object.fromEntries(['qqNickname', 'qqSignature', 'qqAvatar', 'qqFriendRequest'].map((k) => [k, Boolean(admitted && (cfg.profilePerms?.[k] === 'all' || (owner && (cfg.profilePerms?.[k] ?? 'owner') === 'owner')))]))
