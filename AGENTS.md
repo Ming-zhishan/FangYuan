@@ -8,7 +8,7 @@
 - `src/aurabot-modules/` 仅保留迁移导航，不能再添加第二套完整模块。
 - 生成 `artifacts/` 不入 Git，不手改。构建、输入跟踪和行为差异见 `docs/MODULE_BUILD.md`。
 - 人物卡与基础 core 保持完整正文同步；既有预算、调度、隐私、回执和冷却不因整理而取消。
-- 历史 `src/qq-bootstrap/`、旧 ops 与布局脚本不是普通开发启动入口，执行前核对调用者、环境和副作用。
+- 历史源码集中在 `legacy/`；`src/qq-bootstrap/` 与旧 ops 仅留导航。复用前先读 `legacy/README.md`，检查隔离环境、调用者和副作用；默认阻止执行提示不是执行授权。
 
 ## 验证与交付
 

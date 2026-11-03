@@ -27,7 +27,7 @@
 | 次日学习、研读与恢复 | [学习入口](../src/fangyuan-agent/modules/learning/index.mjs)、[worker](../src/fangyuan-agent/modules/learning/worker.mjs) | [研读修订测试](../src/fangyuan-agent/test/learning-revisions.test.mjs)、[学习测试](../src/fangyuan-agent/test/learning.test.mjs)；不据此声称全书读完 |
 | 语音与表情接入 | [语音模块](../src/fangyuan-agent/modules/voice/index.mjs)、[信封](../src/fangyuan-agent/modules/voice/envelope.mjs)、[表情模块](../src/fangyuan-agent/modules/stickers/index.mjs) | [信封测试](../src/fangyuan-agent/test/voice-envelope.test.mjs)、[语音表达测试](../src/fangyuan-agent/test/voice.test.mjs)；语音依赖宿主与可用引擎，测试不证明音色或真人接收 |
 | 媒体离线研发门禁 | [暂存与审核工具](../tools/media-staging/README.md) | stage / review 测试使用合成数据；候选保持不可发布，审核引用不等于授权事实 |
-| 网关与前后台调用保护 | [网关](../src/qq-bootstrap/cloud_gateway.py)、[模型适配](../src/fangyuan-agent/modules/learning/model.mjs) | 学习测试包含假请求；真实路由由运行环境决定，本轮无模型调用 |
+| 网关与前后台调用保护 | [网关](../legacy/qq-bootstrap/cloud_gateway.py)、[模型适配](../src/fangyuan-agent/modules/learning/model.mjs) | 学习测试包含假请求；真实路由由运行环境决定，本轮无模型调用 |
 
 已检查[固定上游集成测试](../src/fangyuan-agent/integration/upstream.test.mjs)的入口：需要 `AURABOT_SOURCE_ROOT`，使用真实 Aurabot 源码与假 DSH、模拟 OneBot。它不是真实 QQ 发送测试，本轮未重跑。[实施记录](../src/fangyuan-agent/IMPLEMENTATION.md)中的旧 140 项与当前 `test:repo` 范围不同，不直接合并统计。
 

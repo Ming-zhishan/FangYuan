@@ -31,7 +31,7 @@
 - 现有发送前复核：`src/fangyuan-agent/modules/conversation/index.mjs`，及`current-batch.mjs/decision.mjs`。它检查当前对象、有效人格、上下文和输出契约，不等于独立外部评委。
 - 现有测试：`test/conversation.test.mjs`、`current-batch.test.mjs`、`reply-decision.test.mjs`、`learning*.test.mjs`、`message-context.test.mjs`、`migration-lore.test.mjs`、`participation.test.mjs`、`persona-admin.test.mjs`等；路径均在`src/fangyuan-agent`。按变更选测，避免每次跑全库。
 - `tools/voice-ab.mjs`已有20条fixture，但简化上下文、人格依据不完整；默认执行会调用模型。只有明确的`--dry`是无网络模式，不能用其标点/字数统计直接验收自然度。
-- 私有工程有QCE/UIA研究、学习队列、归档回放和来源纠错；不能仅凭GitHub克隆推断这些在线状态。旧`src/qq-bootstrap/evaluate-*`属于历史链路，不能当当前DSH全链路。
+- 私有工程有QCE/UIA研究、学习队列、归档回放和来源纠错；不能仅凭GitHub克隆推断这些在线状态。旧`src/qq-bootstrap/evaluate-*`现归档于`legacy/qq-bootstrap/`，属于历史链路，不能当当前DSH全链路。
 - 此PR新增公开合成基线、复用的归档评分器、可追踪缺陷清单和接续步骤。未发现固定周期更新评测集/自动盲评验收的运行证据；本次不创建调度服务。
 
 ## 数据获得、筛选与版本

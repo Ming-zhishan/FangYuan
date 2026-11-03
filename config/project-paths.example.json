@@ -9,7 +9,7 @@
     "dshProduction": "runtime/dsh-live",
     "legacyOperations": "operations/legacy-tools",
     "historicalReleases": "archive/legacy-releases",
-    "qqBootstrap": "src/qq-bootstrap",
+    "qqBootstrap": "legacy/qq-bootstrap",
     "aurabotRuntimeOverrides": "src/aurabot-runtime-overrides"
   },
   "physicalBacking": {

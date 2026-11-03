@@ -10,9 +10,9 @@
 | --- | --- |
 | `src/fangyuan-agent` | `operations/legacy-tools/fangyuan-dsh` |
 | `artifacts/runtime-modules/modules`（生成包） | `runtime/dsh-live/aurabot/modules` |
-| `src/qq-bootstrap` | `runtime/qq-stack/setup` |
+| `legacy/qq-bootstrap` | `runtime/qq-stack/setup` |
 
-只有确认这些目录确实对应本次获授权的比较对象后，才执行检查。顶层目录可为既有布局链接；树内的链接或特殊文件会拒绝继续，不跟随它们读取其他内容。
+历史样本已脱敏并增加防误执行提示，因此与旧运行目录不同是预期结果；禁止按差异自动覆盖生产。只有确认这些目录确实对应本次获授权的比较对象后，才执行检查。顶层目录可为既有布局链接；树内的链接或特殊文件会拒绝继续，不跟随它们读取其他内容。
 
 先按[模块构建](../docs/MODULE_BUILD.md)生成本次新包。若输出在其他目录，显式传 `--runtime-modules NEW_BUNDLE/modules`，不要比较旧产物后误认成当前源码。该选项只选择读取位置，不改变运行目录或写入权限。
 

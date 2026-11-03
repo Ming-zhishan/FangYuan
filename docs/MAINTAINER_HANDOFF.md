@@ -19,7 +19,7 @@
 | 人格、上下文与对话质量 | `src/fangyuan-agent/modules/`、`personas/`，PR #5/#6/#11/#13 | 稳定提交、实际装载版本、两套模块同步范围；不替专项助手合并候选 |
 | 记忆、关系与原著研读 | `memory/`、`learning/`、`lore/` | 数据主责任人、来源规则、JSON / SQLite 兼容和迁移验证 |
 | 语音与表情 | `voice/`、`stickers/`、`tools/media-staging/` | 媒体工程铁则、素材许可与质量；候选不直接进入生产 |
-| 平台、网关与发布 | `live-guard/`、`src/qq-bootstrap/`、`operations/`、`config/` | 平台主责任人、当前调用方、外联与写入副作用；旧脚本不作为快速启动入口 |
+| 平台、网关与发布 | `live-guard/`、`legacy/`、`operations/`、`config/` | 平台主责任人、当前调用方、外联与写入副作用；旧脚本不作为快速启动入口 |
 | 项目介绍与文档 | 根 README、`docs/`、PR 模板 | 功能所处证据层次、实际路径与命令，随相关改动同步 |
 
 上表中的模块以基础源码和运行覆盖分别维护，具体位置见[构建说明](MODULE_BUILD.md)。默认测试覆盖基础模块，并直接生成、导入 runtime 包执行输入回归；六处差异继续保留，不能把独立导入通过当作所有线上效果已验收。

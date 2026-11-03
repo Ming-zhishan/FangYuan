@@ -8,7 +8,7 @@
     "dshProduction": "runtime/dsh-live",
     "legacyOperations": "operations/legacy-tools",
     "historicalReleases": "archive/legacy-releases",
-    "qqBootstrap": "src/qq-bootstrap",
+    "qqBootstrap": "legacy/qq-bootstrap",
     "aurabotRuntimeOverrides": "src/aurabot-runtime-overrides"
   },
   "note": "Portable relative project map; local Windows physical backing paths are in project-paths.local.json (gitignored). Junction targets are machine-specific, not shipped in a future Git clone.",
