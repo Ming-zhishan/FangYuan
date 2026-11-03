@@ -1,6 +1,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { createHash } from 'node:crypto'
 import { avatarCatalog } from './avatar-catalog.mjs'
+import { canAutonomouslyChangeSignature } from './signature-policy.mjs'
 
 const ACTIONS = { set_qq_profile: 'qqNickname', set_self_longnick: 'qqSignature', set_qq_avatar: 'qqAvatar' }
 const digest = (action, params) => createHash('sha256').update(action + JSON.stringify(params)).digest('hex')
@@ -83,9 +84,12 @@ export default {
     api.rule('改昵称、签名、换头像等请求先按当前交情、场合和自身意愿判断，可以拒绝，也可接受；不要把高好感当强制命令，也不要把低好感当权限不足。已开启主动资料时可以自己发起。结果未知先核对，不能换一种参数盲试。')
     async function tick() {
       if (busy || !db()) return
-      const cfg = api.config(), allowed = Object.keys(ACTIONS).filter((a) => autonomousPermits(cfg, a))
+      const cfg = api.config(), now = Date.now(), rows = db().read().profileActions || []
+      // Signature changes have their own month-scale cooldown; nickname/avatar policies remain unchanged.
+      const allowed = Object.keys(ACTIONS).filter((a) => autonomousPermits(cfg, a))
+        .filter((a) => a !== 'set_self_longnick' ||
+          canAutonomouslyChangeSignature(rows, now, cfg.ext?.profile?.signatureMinGapMinutes))
       if (!allowed.length) return
-      const now = Date.now(), rows = db().read().profileActions || []
       const p = cfg.ext?.profile || {}
       if (rows.some((r) => r.status === 'considered' && now - r.at < Math.max(5, Number(p.decisionIntervalMinutes) || 180) * 60000)) return
       if (rows.some((r) => r.status === 'acknowledged' && now - r.at < Math.max(5, Number(p.changeIntervalMinutes) || 60) * 60000)) return
