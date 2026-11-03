@@ -2,7 +2,7 @@
 
 新成员从[接任指南](docs/MAINTAINER_HANDOFF.md)进入，再阅读[当前架构](docs/ARCHITECTURE.md)、[模块职责](docs/MODULE_OWNERS.md)和[工程状态与源码对应关系](docs/CURRENT_STATE.md)，确认实际调用方及任务可写范围。负责人尚未登记的共享模块，先在独立工作区准备说明，由用户或指定集成人员协调。
 
-**多媒体开发必须先阅读 [多媒体工程铁则](docs/MEDIA_ENGINEERING_RULES.md)，并以实际验收证据与当前“仅私聊”安全边界为准。**
+**多媒体开发必须先阅读 [多媒体工程铁则](docs/MEDIA_ENGINEERING_RULES.md)，新候选沿用另行授权的指定私聊验收范围。** 对话负责人报告的群聊恢复不自动授权媒体群发或新素材上线；旧文档的全局“仅私聊”描述按日期从[当前状态](docs/CURRENT_STATE.md#后续运行交接记录)核对，不自行修改运行许可。
 
 1. 请先阅读 README、[Git协作与安全边界](docs/Git协作与安全边界.md) 和 [安全闸门](docs/SECURITY_RELEASE_GATE.md)。
 2. 新功能、修复、文档分别在 `feature/*`、`fix/*`、`docs/*` 分支提交 PR；每个独立开发助手使用自己的工作树。
