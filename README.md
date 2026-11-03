@@ -54,11 +54,11 @@ flowchart TD
 
 图中展示主要职责与消息流向。记忆写入、后台学习和主动回访另有事件钩子与定时检查；模型也可能在复核阶段再次被调用。语音、表情还依赖实际可用的引擎、资产和授权，接入节点不代表所有素材已可发布。
 
-当前主架构是 **DSH NEXT + Aurabot**。`src/qq-bootstrap/` 中仍保留早期 MaiBot 工具与可复用网关，不能据此将 MaiBot 视为当前主回复端。历史目录布局见[架构与目录规范](docs/架构与目录规范.md)，其中路径和迁移状态需重新核实。
+当前主架构是 **DSH NEXT + Aurabot**。早期 MaiBot 工具与网关复用候选已集中到 [legacy/](legacy/README.md)，不能据此将 MaiBot 视为当前主回复端。历史目录布局见[架构与目录规范](docs/架构与目录规范.md)，其中路径和迁移状态需重新核实。
 
 ## 当前进展
 
-仓库状态核对日期：**2026-11-03（Asia/Taipei）**，基线 `bde81af`。运行状态分别采用 2026-11-02 的只读观察、成果负责人后续交接记录与用户确认；本轮未重新连接在线实例。完整证据与待定事项见[当前工程状态](docs/CURRENT_STATE.md)。
+仓库状态核对日期：**2026-11-03（Asia/Taipei）**，布局整理基线 `ba05ba1`。运行证据分别采用带日期的只读哈希观察、成果负责人交接与用户确认；未重新配置或部署在线实例。完整证据与待定事项见[当前工程状态](docs/CURRENT_STATE.md)。
 
 | 层次 | 已确认的内容 | 尚需确认的内容 |
 | --- | --- | --- |
@@ -83,7 +83,7 @@ flowchart TD
 | DSH NEXT + Aurabot | 智能体宿主、QQ 适配和扩展接口；本仓库不包含完整宿主安装包 | [模块 API 快照](src/aurabot-runtime-overrides/API.md) |
 | NapCat / OneBot v11 | QQ 消息收发与回执 | [固定上游集成测试](src/fangyuan-agent/integration/) |
 | SQLite / JSON | 学习档案、原著查询、来源和任务状态持久化 | [学习模块](src/fangyuan-agent/modules/learning/) · [记忆模块](src/fangyuan-agent/modules/memory/) |
-| Ollama / 云端模型网关 | 模型推理及相关路由、用量保护 | [网关源码](src/qq-bootstrap/cloud_gateway.py) · [模型适配](src/fangyuan-agent/modules/learning/model.mjs) |
+| Ollama / 云端模型网关 | 模型推理及相关路由、用量保护 | [历史网关候选](legacy/qq-bootstrap/cloud_gateway.py) · [模型适配](src/fangyuan-agent/modules/learning/model.mjs) |
 | Python | 本地检索与历史研究工具等专项能力 | [检索工具](src/fangyuan-agent/tools/)；运行前核查各脚本依赖与副作用 |
 
 ```text
@@ -95,7 +95,7 @@ src/fangyuan-agent/
 src/aurabot-runtime-overrides/  六处运行差异及运行独有支持文件
 src/aurabot-modules/  旧入口导航，不再维护第二套完整模块
 artifacts/           按需生成的独立模块包与来源清单，不入 Git
-src/qq-bootstrap/    历史工具与仍可复用的网关代码
+legacy/             112 个历史源文件与网关复用候选；原路径仅留导航
 tools/media-staging/ 离线媒体候选暂存与证据审核
 config/              相对路径映射和配置模板
 docs/                安全、架构历史及维护依据
@@ -154,7 +154,7 @@ npm run check
 
 ## 安全、许可与致谢
 
-GitHub、开发克隆与生产实例应保持隔离，不提交 QQ 会话、Cookie / Token、真实模型凭据、私人聊天与记忆数据库、模型权重、受限媒体、日志或自动生成缓存。当前公开树的历史脚本仍有账号标识，不能视为已完成脱敏；清理与历史审查是[尚未解决的事项](docs/CURRENT_STATE.md)。本机 Windows 路径覆盖保存在被忽略的 `config/project-paths.local.json`，公共配置使用相对映射，旧脚本的路径假设仍需逐项核对。
+GitHub、开发克隆与生产实例应保持隔离，不提交 QQ 会话、Cookie / Token、真实模型凭据、私人聊天与记忆数据库、模型权重、受限媒体、日志或自动生成缓存。本轮已清理历史工具中发现的账号标识、人名种子与私人路径，详见[归档说明](legacy/README.md)；旧公开 Git 历史及完整隐私审查仍需单独治理，不能宣称全部脱敏。本机 Windows 路径覆盖保存在被忽略的 `config/project-paths.local.json`，公共配置使用相对映射，旧脚本的路径假设仍需逐项核对。
 
 `operations/` 与旧启动、部署、账号控制脚本可能依赖真实环境并产生副作用，不作为开发快速开始入口。涉及生产 QQ、人格配置、模型配置或数据库的部署须另行授权，备份并验收；PR 合并本身不等于部署。
 

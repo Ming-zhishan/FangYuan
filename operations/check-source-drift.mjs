@@ -7,7 +7,7 @@ const root = fileURLToPath(new URL('../', import.meta.url))
 const trees = [
   { label: 'agent', source: 'src/fangyuan-agent', live: 'operations/legacy-tools/fangyuan-dsh' },
   { label: 'aurabot', source: 'artifacts/runtime-modules/modules', live: 'runtime/dsh-live/aurabot/modules' },
-  { label: 'qq-bootstrap', source: 'src/qq-bootstrap', live: 'runtime/qq-stack/setup' }
+  { label: 'qq-bootstrap', source: 'legacy/qq-bootstrap', live: 'runtime/qq-stack/setup' }
 ]
 const ignored = new Set(['.git', 'node_modules', '__pycache__', '.venv', 'backups', 'logs', 'modules-data', '.aurabot-cache'])
 const output = { at: new Date().toISOString(), readOnly: true, comparedTreesReadOnly: true, reportWritten: false, comparisons: [] }

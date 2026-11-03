@@ -4,8 +4,8 @@
 
 ## 代码位置与真实运行服务
 
-- `src/fangyuan-agent`：基线逻辑与离线测试；`src/aurabot-modules`：Aurabot 扩展源码镜像。相同内容不等于无意义重复，因为装载路径可能不同。
-- `src/qq-bootstrap`：包括历史 MaiBot 时期的工具和仍复用的网关实现；请按调用链确认使用状态，不能一键运行全目录脚本。
+- `src/fangyuan-agent/modules` 是共享维护源；`src/aurabot-runtime-overrides` 保留有意运行差异；按[模块构建](MODULE_BUILD.md)生成独立包。旧 `src/aurabot-modules` 只留导航，不能重新加入完整副本。
+- `legacy/`：历史启动、账号、研究和网关复用候选，见[分类与限制](../legacy/README.md)。旧 `src/qq-bootstrap` 与研发 ops 只留导航；迁移没有改变在线实例。
 - `services/`、`runtime/`、`archive/`、`research/media-catalog/` 不在仓库中。真实 QQ 会话、密钥、记忆库、日志、语音、原著素材、模型权重都只能留在各自授权环境。
 - `config/project-paths.json` 仅是相对路径映射，可以提交；机器绝对路径覆盖 `config/project-paths.local.json` 永不提交。
 - `operations/` 的布局与漂移脚本专为有生产目录的本机编写，可能读取/写入迁移验收记录；不要在普通开发克隆中执行，除非了解副作用。
@@ -13,8 +13,8 @@
 ## 拉取请求（PR）与验证
 
 1. 每位协作者使用独立分支或工作树，不同时改同一个可写目录。
-2. 改动模块逻辑：说明来源、实际被谁加载、向前兼容性及独立测试；若须同时更新镜像模块，应在 PR 中明确列出。
-3. 在 `src/fangyuan-agent` 执行 `npm test`（完全离线），并做 Python 语法检查；不得用生产 QQ、真群聊和付费 API 作为日常 CI 测试。
+2. 改动模块逻辑：说明来源、实际被谁加载、向前兼容性及独立测试；涉及运行覆盖时分别说明，禁止手改生成包或恢复第二套共享副本。
+3. 在根目录执行 `npm run check`；不得用生产 QQ、真群聊和付费 API 作为日常 CI 测试。
 4. 检查提交差异和 `node tools/audit-staged.mjs` 的结果，禁止提交账号、群号、Token、真实聊天记录、本机绝对路径、模型权重和生成缓存。
 5. 生产部署须另行授权，先做回滚与配置/数据备份；普通 PR 合并不等于生产上线。
 6. 第三方代码、原著引文、音视频素材的权属未完成确认。仓库可见不等于获得再分发许可。

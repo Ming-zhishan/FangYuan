@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
 const script = fileURLToPath(new URL('./check-source-drift.mjs', import.meta.url))
-const sourceDirs = ['src/fangyuan-agent', 'artifacts/runtime-modules/modules', 'src/qq-bootstrap']
+const sourceDirs = ['src/fangyuan-agent', 'artifacts/runtime-modules/modules', 'legacy/qq-bootstrap']
 const liveDirs = ['operations/legacy-tools/fangyuan-dsh', 'runtime/dsh-live/aurabot/modules', 'runtime/qq-stack/setup']
 function fixture(t, populate = true) {
   const temporary = fs.mkdtempSync(path.join(tmpdir(), 'fangyuan-drift-test-'))

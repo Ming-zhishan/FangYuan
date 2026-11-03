@@ -64,7 +64,8 @@
     "responsibilities": "docs/MODULE_OWNERS.md",
     "current_state": "docs/CURRENT_STATE.md",
     "module_build": "docs/MODULE_BUILD.md",
-    "integration_baseline": "docs/INTEGRATION_BASELINE.md"
+    "integration_baseline": "docs/INTEGRATION_BASELINE.md",
+    "legacy": "legacy/README.md"
   },
   "historical_inventory": {
     "format_version": 1,
@@ -194,5 +195,14 @@
     },
     "update_rule": "Verify refs, source paths and normalized hashes; record observation scope. Never overwrite runtime from this map."
   },
-  "update_rule": "Update canonical sources or intentional overrides, build and verify artifacts; never edit generated bundles or overwrite runtime from this map."
+  "update_rule": "Update canonical sources or intentional overrides, build and verify artifacts; never edit generated bundles or overwrite runtime from this map.",
+  "legacy": {
+    "source_baseline": "ba05ba1670db09eff6bc823e80c45cc1d4ba1942",
+    "path": "legacy",
+    "archived_source_files": 112,
+    "python_direct_entry_guards": 53,
+    "powershell_guards": 21,
+    "live_services_changed": false,
+    "complete_history_redaction": false
+  }
 }
