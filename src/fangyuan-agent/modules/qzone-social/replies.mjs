@@ -38,8 +38,9 @@ export function createReplies({ config,ready,call,generate,load,save,clock=Date.
     }
     return ordered([{...parent,reply_id:null},...replies])
   }
-  const sourceKey=(post,parent,row)=>hash([String(config().botQQ),post.feed_ref,parent.comment_id,row.reply_id!=null?'reply':'comment',String(keyOf(row))])
-  const threadKey=(post,parent)=>hash([String(config().botQQ),post.feed_ref,parent.comment_id])
+  // Issued references may refresh after likes/reads. Durable identity is account + actual tid + parent.
+  const sourceKey=(post,parent,row)=>hash([String(config().botQQ),post.tid,String(parent.comment_id),row.reply_id!=null?'reply':'comment',String(keyOf(row))])
+  const threadKey=(post,parent)=>hash([String(config().botQQ),post.tid,String(parent.comment_id)])
   const view=rows=>rows.map(({comment_id,reply_id,user_id,uid,nickname,time,content,target_user_id})=>({comment_id,reply_id,user_id,uid,nickname,time,content,target_user_id}))
   function confirmed(rows,a,me) {
     return rows.find(row=>row.reply_id!=null && mine(row,me) && cleanReply(row.content)===a.text &&
@@ -58,7 +59,13 @@ export function createReplies({ config,ready,call,generate,load,save,clock=Date.
       const page=await pages('get_qzone_comment_list',{feed_ref:post.feed_ref},'comments')
       for(const parent of page.items) {
         if(parent.comment_id==null || !parent.comment)continue
-        const rows=await thread(post,parent),tk=threadKey(post,parent),attempt=data.attempts[tk]
+        const rows=await thread(post,parent),tk=threadKey(post,parent)
+        let attempt=data.attempts[tk]
+        if(!attempt) {
+          // Preserve an earlier attempt through the initial reference-key migration, including unknown writes.
+          const legacy=Object.entries(data.attempts).find(([,a])=>a.tid===post.tid && a.parent===String(parent.comment_id) && (!a.owner || a.owner===me.uin))
+          if(legacy){attempt=legacy[1];data.attempts[tk]=attempt;delete data.attempts[legacy[0]];persist()}
+        }
         if(attempt && ['attempted','unknown','accepted_unverified'].includes(attempt.status)) {
           const found=confirmed(rows,attempt,me)
           if(found)finish(attempt,found)
@@ -95,7 +102,7 @@ export function createReplies({ config,ready,call,generate,load,save,clock=Date.
         if(!current || hash(view(await thread(post,current)))!==hash(view(rows)) || hash(view(latest))!==hash(view(rows)))continue
         const check=await identity()
         if(!enabled() || check.uin!==me.uin || config().dryRun)return {ok:false,reason:'permission_changed'}
-        const a={status:'attempted',at:clock(),tid:post.tid,parent:String(parent.comment_id),target:String(last.user_id),text,sources:pending.map(row=>sourceKey(post,parent,row))}
+        const a={status:'attempted',at:clock(),owner:me.uin,tid:post.tid,parent:String(parent.comment_id),target:String(last.user_id),text,sources:pending.map(row=>sourceKey(post,parent,row))}
         data.attempts[tk]=a;persist() // durable BEFORE a network write; no automatic resend on uncertainty
         try {
           const receipt=await call('comment_qzone',{tid:post.tid,target_uin:me.uin,comment_id:String(parent.comment_id),comment_uin:String(parent.user_id),reply_uin:String(last.user_id),reply_name:String(last.nickname||''),content:text},{timeoutMs:30000,retries:0})

@@ -37,6 +37,7 @@ test('reply binds the actual post, parent and newest speaker; aggregates the ful
 test('response lost or accepted without a readable comment is uncertain and never blindly resent',async()=>{
   for(const options of [{failWrite:true},{noReadback:true}]){
     const f=fixture(options),s=f.make();assert.equal((await s.run()).ok,false)
+    f.post.feed_ref={...f.post.feed_ref,like_key:'refreshed-issued-reference'}
     f.parent.replies.push({reply_id:'later-user',user_id:'100002',time:Date.now()/1000,content:'又说一句'})
     await f.make().run();assert.equal(f.calls.filter(x=>x.action==='comment_qzone').length,1);assert.equal(f.drafts,1)
   }
