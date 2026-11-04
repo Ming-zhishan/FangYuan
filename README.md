@@ -58,17 +58,17 @@ flowchart TD
 
 ## 当前进展
 
-仓库状态核对日期：**2026-11-03（Asia/Taipei）**，布局整理基线 `ba05ba1`。运行证据分别采用带日期的只读哈希观察、成果负责人交接与用户确认；未重新配置或部署在线实例。完整证据与待定事项见[当前工程状态](docs/CURRENT_STATE.md)。
+仓库状态核对日期：**2026-11-04（Asia/Taipei）**，结构基线 `6979999`。运行证据分别采用带日期的只读哈希观察、成果负责人交接与用户确认；未重新配置或部署在线实例。完整证据与待定事项见[当前工程状态](docs/CURRENT_STATE.md)。
 
 | 层次 | 已确认的内容 | 尚需确认的内容 |
 | --- | --- | --- |
 | 主分支代码与离线验证 | 上述核心机制及媒体暂存、审核门禁工具；离线检查范围与记录见[当前状态](docs/CURRENT_STATE.md) | 不能据此推断真人对话质量、生产发送或第三方服务可用性 |
 | 后续运行交接记录 | 业务管理员子集、授权群聊恢复已有交接记录；2026-11-03 12:06 完整人格及已确认的朋友定制已切换，用户确认成功，管理员与群私聊许可保留 | [固定记录与证据边界](docs/CURRENT_STATE.md#后续运行交接记录)另列；本轮未复核在线配置或收发，长期效果仍待观察 |
 | 对话研发 | 原 [PR #5](https://github.com/Ming-zhishan/FangYuan/pull/5) 的评测、交接及 [PR #6](https://github.com/Ming-zhishan/FangYuan/pull/6) 的输入修复已从固定来源纳入[整合基线](docs/INTEGRATION_BASELINE.md) | 原草稿 PR 未代为合并；真实互动继续观察，亲近与情绪表达试验默认关闭 |
-| 后续对话工作 | [PR #21](https://github.com/Ming-zhishan/FangYuan/pull/21)、[PR #22](https://github.com/Ming-zhishan/FangYuan/pull/22)、[PR #23](https://github.com/Ming-zhishan/FangYuan/pull/23) 继续群参与、历史补读及私聊/空间恢复 | 尚未纳入当前包，部分有单独部署报告；当前源码包不能直接覆盖运行实例，见[范围](docs/CURRENT_STATE.md#后续研发与本包范围) |
+| 后续对话工作 | [PR #25](https://github.com/Ming-zhishan/FangYuan/pull/25) 已开始按统一布局接续 [PR #21](https://github.com/Ming-zhishan/FangYuan/pull/21)、[PR #22](https://github.com/Ming-zhishan/FangYuan/pull/22)、[PR #23](https://github.com/Ming-zhishan/FangYuan/pull/23) 的群参与、历史补读及私聊/空间恢复，并扩展共同所有者协作 | 尚未纳入当前包，部分有单独部署报告；当前源码包不能直接覆盖运行实例，见[范围](docs/CURRENT_STATE.md#后续研发与本包范围) |
 | 管理员与人格研发 | 原 [PR #11](https://github.com/Ming-zhishan/FangYuan/pull/11) 的身份/管理模块与 [PR #13](https://github.com/Ming-zhishan/FangYuan/pull/13) 已验收完整人格及配套测试已纳入研发基线 | 公共模板默认关闭；源码包含、原 PR 状态和限定生产组合分别判断，不能整套覆盖 |
 | 多媒体研发 | [PR #2](https://github.com/Ming-zhishan/FangYuan/pull/2)、[PR #3](https://github.com/Ming-zhishan/FangYuan/pull/3) 已合并离线暂存与证据门禁；[PR #4](https://github.com/Ming-zhishan/FangYuan/pull/4)、[PR #7](https://github.com/Ming-zhishan/FangYuan/pull/7) 已合并交接与精简试听工具 | 媒体工厂仍未合入主线；用户已有声音方向反馈，返工后的情绪与流畅度、图片认可、许可范围和指定私聊验收仍有缺口 |
-| 协作与工程整理 | 已建立基础源码、运行差异、独立构建与来源清单；main 要求 PR 和双平台检查 | 接口、历史工具及接任人员仍继续整理；[接任指南](docs/MAINTAINER_HANDOFF.md)列明剩余条件 |
+| 协作与工程整理 | 基础源码、运行差异、独立构建与来源清单已建立；历史工程已归档，接口和数据归属已有说明；main 要求 PR 和双平台检查 | 具体接任人、生产资料及内部技术债仍需处理；[接任指南](docs/MAINTAINER_HANDOFF.md)列明剩余条件 |
 | 未来方向 | 更自然的连续互动、更可靠的关系与记忆表现，以及逐步探索文字玩法 | 炼蛊、仙道杀招等互动玩法属于产品方向，本次未确认有已验收成品 |
 
 语音链路有历史私聊播放反馈记录，但普通 TTS 不等于目标角色音色，旧记录也不能证明新语音包已通过验收。当前没有适合本次新增公开展示的已核授权素材，因此首页暂不放对话截图或媒体样品。
@@ -106,7 +106,7 @@ operations/          本机布局检查、默认只输出的来源差异检查�
 
 ## 开发入口
 
-新成员从[接任指南](docs/MAINTAINER_HANDOFF.md)按顺序了解工程，再看[当前架构](docs/ARCHITECTURE.md)、[模块职责](docs/MODULE_OWNERS.md)和[源码与生产对应关系](docs/CURRENT_STATE.md)。这些文档解释已有工程和待确认事项，不表示已完成源码整合或生产发布。
+新成员从[接任指南](docs/MAINTAINER_HANDOFF.md)按顺序了解工程，再看[当前架构](docs/ARCHITECTURE.md)、[模块职责](docs/MODULE_OWNERS.md)和[源码与生产对应关系](docs/CURRENT_STATE.md)。这些文档解释本轮结构整理结果、当前业务范围和生产交接条件；接口与数据归属见[协作契约](docs/INTERFACE_CONTRACTS.md)，检查结果见[整理验收](docs/REORGANIZATION_ACCEPTANCE.md)。
 
 已有成果的固定来源和仍关闭候选从[整合基线](docs/INTEGRATION_BASELINE.md)进入；对话研发接续从[专项交接](docs/dialogue-quality/HANDOFF.md)进入。不要仅凭旧草稿 PR 尚未关闭，就判断其内容尚未进入当前研发基线。
 
@@ -139,7 +139,7 @@ npm run check
 
 每个 PR 都要检查是否影响 README：涉及能力状态、架构、目录、命令或协作方式时，同步更新受影响段落及证据页；不影响时在 PR 中写明理由。[PR 模板](.github/pull_request_template.md)和[维护方法](docs/README_MAINTENANCE.md)将这项要求保留给后续维护者。模板用于提醒和审查，当前 CI 不自动判断文档语义是否完整。
 
-统一源码按[分阶段整合计划](docs/SOURCE_INTEGRATION_PLAN.md)推进：以已确认的人格版本和切换范围为基点，核齐关联输入修复、管理员与宿主组合，再逐项保留两套模块差异、整理职责与历史工具，最后验证交接。尚未具备普通克隆后直接运行生产 Bot 的完整环境与发布清单。
+已确认成果的源码整合、共享源去重、运行差异保留、历史工程分区及接手说明已完成，[整理结果与后续边界](docs/SOURCE_INTEGRATION_PLAN.md)逐项列明。后续业务分支继续独立验收，人员与私有生产资料另行交接。尚未具备普通克隆后直接运行生产 Bot 的完整环境与发布清单。
 
 ## 限制与后续方向
 
@@ -150,7 +150,7 @@ npm run check
 - 新语音和表情需要来源、许可、质量与发送效果分别验收；候选素材和审核队列默认不具备生产发布权限。
 - 群聊恢复有对话负责人的后续运行记录；这不授予新素材群发、扩大联系对象或部署其他候选的权限，各自仍需授权与验收。
 
-下一阶段核齐已采用成果的源码与依赖组合并整理工程，持续补齐真实连续对话、关系表达与媒体品质的证据。人格稿验收和切换成功不表示啰嗦、过度推断或多轮稳定性问题全部解决。重要变化按[维护方法](docs/README_MAINTENANCE.md)随对应 PR 增量更新首页；目前没有为本 README 配置后台定时检查。
+后续按已明确的模块与运行差异继续研发，持续补齐真实连续对话、关系表达与媒体品质的证据。人格稿验收和切换成功不表示啰嗦、过度推断或多轮稳定性问题全部解决。重要变化按[维护方法](docs/README_MAINTENANCE.md)随对应 PR 增量更新首页；目前没有为本 README 配置后台定时检查。
 
 ## 安全、许可与致谢
 
