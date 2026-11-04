@@ -65,7 +65,9 @@
     "current_state": "docs/CURRENT_STATE.md",
     "module_build": "docs/MODULE_BUILD.md",
     "integration_baseline": "docs/INTEGRATION_BASELINE.md",
-    "legacy": "legacy/README.md"
+    "legacy": "legacy/README.md",
+    "interface_contracts": "docs/INTERFACE_CONTRACTS.md",
+    "reorganization_acceptance": "docs/REORGANIZATION_ACCEPTANCE.md"
   },
   "historical_inventory": {
     "format_version": 1,
