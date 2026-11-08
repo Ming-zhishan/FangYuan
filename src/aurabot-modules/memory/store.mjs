@@ -18,7 +18,7 @@ export function terms(value) {
   return result
 }
 function overlap(a, b) { return [...terms(a)].filter((t) => terms(b).has(t)).length }
-const empty = () => ({ version: 1, events: [], facts: [], jobs: [], outcomes: [] })
+const empty = () => ({ version: 1, events: [], facts: [], jobs: [], outcomes: [], initiatives: [] })
 
 /** Synchronous mutations hold an exclusive file lock; corrupt stores never become empty stores. */
 export class SocialStore {
@@ -150,6 +150,9 @@ export class SocialStore {
     const hidden = new Set([...state.events.filter((e) => e.forgotten).map((e) => e.id), ...(state.forgottenSources || [])])
     const outputs = (state.outputs || []).filter((o) => o.scope === scope && !o.sourceIds.some((id) => hidden.has(id)) && o.people.some((uid) => participants.includes(uid)) && (overlap(query, o.text) > 0 || /上次|以前|之前|怎么说|聊过/.test(query))).slice(-2)
     for (const o of outputs) lines.push(JSON.stringify({ previousGeneratedAnswer: o.text.slice(0, 350), status: o.status, at: new Date(o.at).toISOString() }))
+    // The person may be answering something this bot started unprompted; the bot must know what it actually sent.
+    const started = (state.initiatives || []).filter((x) => x.scope === scope && x.status === 'sent' && x.text && this.clock() - x.at < 48 * 3600000).slice(-2)
+    for (const x of started) lines.push(JSON.stringify({ 自己主动提起过: x.text.slice(0, 240), at: new Date(x.at).toISOString(), status: '已发送，尚未确认对方回应' }))
     const result = []; let chars = 0
     for (const line of lines) { if (chars + line.length + 1 > maxChars) break; result.push(line); chars += line.length + 1 }
     return result.join('\n')
@@ -188,6 +191,7 @@ export class SocialStore {
       s.events = s.events.filter((e) => protectedIds.has(e.id) || !archived(e))
       // Generated output audit is retained in SQLite before this hot cache is shortened.
       s.outputs = (s.outputs || []).filter((o, i, list) => i >= list.length - 500 || !archived(o, 'output'))
+      s.initiatives = (s.initiatives || []).slice(-300)
       return { compacted: true, archivedEventsRemovedFromHotCache: before - s.events.length }
     })
   }
@@ -208,7 +212,37 @@ export class SocialStore {
       const job = state.jobs.find((j) => j.id === jobId)
       if (!job) throw new Error('Missing follow-up')
       if (status === 'attempted' && job.status !== 'pending') throw new Error('Already claimed')
-      job.status = status; state.outcomes.push({ job: jobId, status, at: this.clock() }); return job
+      job.status = status; job.settledAt = this.clock(); state.outcomes.push({ job: jobId, status, at: this.clock() }); return job
     })
+  }
+  /**
+   * A self-started topic is claimed before the model call, exactly like a follow-up.
+   * Whatever happens next, the claim stays in the log, so a restart can never send twice.
+   */
+  claimInitiative({ scope, at = this.clock() }) {
+    if (!validScope(scope) || !scope.startsWith('private:')) throw new Error('A self-started topic needs a private conversation')
+    return this.mutate((state) => {
+      state.initiatives ||= []
+      const item = { id: id(`initiative|${scope}|${at}|${state.initiatives.length}`), scope, at, status: 'attempted' }
+      state.initiatives.push(item)
+      if (state.initiatives.length > 300) state.initiatives = state.initiatives.slice(-300)
+      return item
+    })
+  }
+  settleInitiative(itemId, status, patch = {}) {
+    if (!['declined', 'sent', 'unknown', 'expired'].includes(status)) throw new Error('Invalid initiative outcome')
+    return this.mutate((state) => {
+      const item = (state.initiatives || []).find((x) => x.id === itemId)
+      if (!item) throw new Error('Missing self-started topic')
+      Object.assign(item, patch, { status, settledAt: this.clock() })
+      return item
+    })
+  }
+  /** Latest attempt or send time per conversation; used for hourly cadence without inventing new state. */
+  proactiveLog(scope = '') {
+    const state = this.read(), match = (row) => !scope || row.scope === scope
+    const jobs = state.jobs.filter((j) => match(j) && ['attempted', 'sent', 'unknown'].includes(j.status)).map((j) => ({ at: j.settledAt || j.createdAt || 0, scope: j.scope, kind: 'follow-up' }))
+    const initiatives = (state.initiatives || []).filter((x) => match(x) && ['attempted', 'sent', 'unknown'].includes(x.status)).map((x) => ({ at: x.at, scope: x.scope, kind: 'initiative', text: x.text || '' }))
+    return [...jobs, ...initiatives].sort((a, b) => a.at - b.at)
   }
 }

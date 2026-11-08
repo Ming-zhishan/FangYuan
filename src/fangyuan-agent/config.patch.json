@@ -38,7 +38,12 @@
   },
   "speakUp": {
     "enabled": false,
-    "nudge": false
+    "nudge": false,
+    "awakeFrom": 6,
+    "awakeTo": 24,
+    "initiative": true,
+    "initiativeEveryMinutes": 60,
+    "initiativeMaxPerDay": 24
   },
   "diary": {
     "enabled": false

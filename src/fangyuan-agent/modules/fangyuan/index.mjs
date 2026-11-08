@@ -1,4 +1,4 @@
-import { canFollowUp, attemptFollowUp } from './policy.mjs'
+import { canFollowUp, attemptFollowUp, canInitiate, attemptInitiation } from './policy.mjs'
 import { readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 const core = readFileSync(new URL('./core.txt', import.meta.url), 'utf8').trim()
@@ -110,6 +110,6 @@ export default {
       api.setConfig({ ext: { profile: { autonomousNickname: body.autonomousNickname, autonomousSignature: body.autonomousSignature, autonomousAvatar: body.autonomousAvatar } } })
       return { ok: true, message: '主动资料开关已保存；工具授权仍独立生效。' }
     })
-    return { version: '0.1.0', personaCore: () => effectiveCore, canFollowUp, attemptFollowUp }
+    return { version: '0.1.0', personaCore: () => effectiveCore, canFollowUp, attemptFollowUp, canInitiate, attemptInitiation }
   },
 }
