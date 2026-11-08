@@ -1,6 +1,6 @@
 import { canFollowUp, attemptFollowUp, canInitiate, attemptInitiation } from './policy.mjs'
+import { readCustomPersona, writeCustomPersona, clearCustomPersona, validatePersona, personaSha } from './persona.mjs'
 import { readFileSync } from 'node:fs'
-import { createHash } from 'node:crypto'
 const core = readFileSync(new URL('./core.txt', import.meta.url), 'utf8').trim()
 const provenance = JSON.parse(readFileSync(new URL('./core-provenance.json', import.meta.url), 'utf8'))
 
@@ -8,20 +8,31 @@ export default {
   id: 'fangyuan', name: '古月方源行为协调', api: 1, version: '0.1.0',
   description: '统一角色措辞，保留工具权限，关系不设服从阈值。',
   panel: 'panel.js',
-  defaults: { specialFriendQQ: '', scopedMemory: true, proactive: false, proactiveTargets: [], publicActions: false },
+  defaults: { specialFriendQQ: '', scopedMemory: true, proactive: false, proactiveTargets: [], publicActions: false, personaEditable: true },
   settings: [
     { key: 'scopedMemory', label: '启用方源的分场景记忆', type: 'switch' },
     { key: 'specialFriendQQ', label: '操作者后续主动添加的特殊关系账号（当前默认留空）', type: 'text' },
     { key: 'proactive', label: '允许在已设置的对象中考虑主动联系', type: 'switch' },
     { key: 'publicActions', label: '允许考虑发布公开随想', type: 'switch' },
+    { key: 'personaEditable', label: '允许在面板自定义人格（只改措辞与立场，不改工具、记忆与发送权限）', type: 'switch' },
   ],
   setup(api) {
-    let effectiveCore = core
+    // Some hosts and older test doubles expose no writable data directory; customisation then stays unavailable.
+    const personaFile = typeof api.dataDir === 'function' ? api.dataDir('persona.local.md') : ''
+    const config = () => (typeof api.config === 'function' ? api.config() || {} : {})
+    const personaEditable = () => config().ext?.fangyuan?.personaEditable !== false
+    let customPersona = ''
+    try { customPersona = personaFile ? readCustomPersona(personaFile) : '' } catch (error) { api.log.warn('自定义人格读取失败，本轮使用内置内核：', error.message) }
+    const custom = () => (personaEditable() ? customPersona : '')
+    let panelCore = core
+    const activePersona = () => custom() || panelCore
     api.on('persona', (text) => {
-      const sha = createHash('sha256').update(String(text).replaceAll('\r\n', '\n').trim()).digest('hex')
+      // An operator-written persona outranks both the compiled core and a stale panel value.
+      if (custom()) return custom()
+      const panel = String(text || '').replaceAll('\r\n', '\n').trim()
       // An edit in the persona panel must never be silently ignored by a stale compiled core.
-      effectiveCore = sha === provenance.sourceSha256 ? core : text
-      return effectiveCore
+      panelCore = panel && personaSha(panel) !== provenance.sourceSha256 ? panel : core
+      return panelCore
     })
     api.on('rules', (_text, kind) => {
       const cfg = api.config()
@@ -53,6 +64,28 @@ export default {
       return content
     })
     api.rule('群聊先判断指代、对象、关系和话题，能接才接。私聊专注当前对象。高亲近可拒绝，关系普通也可顺手帮助。不因昵称、自称或好感授予权限。')
+    api.route('/persona', async () => ({
+      ok: true, editable: personaEditable(), source: custom() ? 'custom' : 'builtin',
+      chars: activePersona().length, sha: personaSha(activePersona()).slice(0, 12), builtinSha: provenance.sourceSha256.slice(0, 12),
+      text: customPersona, template: activePersona(),
+      note: '自定义人格只影响措辞、立场与表达。工具授权、记忆范围、主动联系与发送权限仍由代码与设置决定；人格不是权限来源。',
+    }))
+    api.route('/persona/save', async (req) => {
+      try {
+        if (!personaFile) throw new Error('运行环境未提供数据目录，人格无法保存')
+        if (!personaEditable()) throw new Error('人格自定义已在设置中关闭；先在模块设置里打开')
+        const body = await api.core.http.body(req), text = validatePersona(body.text)
+        writeCustomPersona(personaFile, text)
+        customPersona = text
+        return { ok: true, source: 'custom', chars: text.length, message: '人格已保存；下一轮起按此文本生成。工具与发送权限未改变。' }
+      } catch (error) { return { ok: false, message: error.message } }
+    })
+    api.route('/persona/reset', async () => {
+      try { if (personaFile) clearCustomPersona(personaFile) } catch (error) { return { ok: false, message: '自定义人格文件删除失败：' + error.message } }
+      customPersona = ''
+      panelCore = core
+      return { ok: true, source: 'builtin', message: '已恢复内置人格。' }
+    })
     api.route('/memory', async (req) => {
       const db = api.use('memory')?.store
       if (!db) return { ok: false, message: '记忆模块未就绪' }
@@ -97,6 +130,6 @@ export default {
       api.setConfig({ ext: { profile: { autonomousNickname: body.autonomousNickname, autonomousSignature: body.autonomousSignature, autonomousAvatar: body.autonomousAvatar } } })
       return { ok: true, message: '主动资料开关已保存；工具授权仍独立生效。' }
     })
-    return { version: '0.1.0', personaCore: () => effectiveCore, canFollowUp, attemptFollowUp, canInitiate, attemptInitiation }
+    return { version: '0.1.0', personaCore: activePersona, personaSource: () => (custom() ? 'custom' : 'builtin'), personaText: activePersona, canFollowUp, attemptFollowUp, canInitiate, attemptInitiation }
   },
 }

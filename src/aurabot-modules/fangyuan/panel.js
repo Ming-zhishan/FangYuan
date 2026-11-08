@@ -5,12 +5,29 @@ return function Panel({ toast }) {
   const [query, setQuery] = useState('')
   const [profile, setProfile] = useState(null)
   const [learning, setLearning] = useState(null)
+  const [persona, setPersona] = useState(null)
+  const [draft, setDraft] = useState('')
   const load = async (next = scope) => {
     const r = await call('/memory', { scope: next, query })
     if (r.ok) { setState(r); setScope(r.scope) } else toast(r.message)
   }
-  useEffect(() => { load(''); call('/profile').then(setProfile); call('/learning').then(setLearning); const timer = setInterval(() => call('/learning').then(setLearning), 30000); return () => clearInterval(timer) }, [])
+  const reloadPersona = async (useTemplate) => {
+    const p = await call('/persona')
+    setPersona(p)
+    setDraft(useTemplate ? (p.template || '') : (p.text || p.template || ''))
+    return p
+  }
+  useEffect(() => { load(''); call('/profile').then(setProfile); call('/learning').then(setLearning); reloadPersona(false); const timer = setInterval(() => call('/learning').then(setLearning), 30000); return () => clearInterval(timer) }, [])
   return h('div', null,
+    h(ui.Card, { title: '人格自定义', desc: '这里写的内容会替代内置人格内核，用于身份、立场与表达方式；工具授权、记忆范围、主动联系与发送权限仍由代码和设置决定。保存后下一轮生效。' },
+      persona ? h('div', null,
+        h('p', null, (persona.editable ? '' : '设置中已关闭人格自定义，保存会被拒绝。') + '当前来源：' + (persona.source === 'custom' ? '自定义' : '内置') + '；' + persona.chars + ' 字符；指纹 ' + persona.sha + '（内置 ' + persona.builtinSha + '）'),
+        h('textarea', { className: 'ab-input', rows: 12, value: draft, 'aria-label': '人格文本', placeholder: '写清身份、稳定目标、如何认识眼前的人和表达方式；不必复述工具规则。', onChange: (e) => setDraft(e.target.value) }),
+        h('div', { className: 'ab-flex' },
+          h(ui.Btn, { onClick: async () => { const r = await call('/persona/save', { text: draft }); toast(r.message); if (r.ok) await reloadPersona(false) } }, '保存人格'),
+          h(ui.Btn, { onClick: async () => { await reloadPersona(true); toast('已载入当前生效内容，可在此基础上修改') } }, '载入当前生效内容'),
+          h(ui.Btn, { onClick: async () => { const r = await call('/persona/reset'); toast(r.message); if (r.ok) await reloadPersona(true) } }, '恢复内置人格')),
+        h('p', { className: 'ab-muted ab-small' }, persona.note)) : h('p', null, '正在读取人格状态…')),
     h(ui.Card, { title: '每日学习与原著研读', desc: '每天凌晨 4 点复盘前一天；离线后补跑任务并补看可取得的消息。原著已收录与已经研读分别计数。' },
       learning?.ok ? h('div', null,
         learning.unrestrictedUsage ? h('p', null, '持续研读已启用：不设每日或累计 token、积分及调用次数上限；实际用量照常记录。') : null,
