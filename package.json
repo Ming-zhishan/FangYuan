@@ -1,0 +1,15 @@
+{
+  "name": "fangyuan-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm --prefix src/fangyuan-agent run test:repo",
+    "test:python": "python tools/media-staging/voice_focus_test.py && python -m unittest discover -s tools/dialogue-quality/scripts -p test_*.py && python tools/dialogue-quality/scripts/smoke.py && python tools/dialogue-quality/scripts/evaluate.py validate --cases tools/dialogue-quality/data/persona-cases.v1.jsonl && python tools/dialogue-quality/scripts/build_persona_core.py && python tools/dialogue-quality/scripts/verify_persona_sources.py",
+    "check": "npm test && npm run test:python",
+    "build:modules": "node tools/build-modules.mjs",
+    "test:upstream": "npm --prefix src/fangyuan-agent run test:upstream"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

@@ -1,0 +1,75 @@
+# 当前工程状态与来源基线
+
+核对日期：2026-11-04（Asia/Taipei）；结构基线 `6979999`，布局整理起点 `d6b9f93`。本文为当前入口，历史观察保留在 [SOURCE_MAP](SOURCE_MAP.json) 的 historical_inventory 及固定交接中。主分支包含、磁盘内容、实际装载与长期效果分别判断。
+
+## 当前结论
+
+- [PR #19](https://github.com/Ming-zhishan/FangYuan/pull/19) 已纳入固定 `396d22e` 的输入、身份、完整人格及配套测试/交接；原 PR #5/#6/#11/#13 未代为合并，旧草稿状态不等于当前仓库缺少这些内容。
+- [PR #20](https://github.com/Ming-zhishan/FangYuan/pull/20) 补回已部署的自主说说/签名冷却，四文件在两套旧源码中均匹配只读观察哈希。默认 14 天 / 30 天，未修改生产。
+- 共享源码统一于 `src/fangyuan-agent/modules/`，运行差异位于 `src/aurabot-runtime-overrides/`，生成包不入 Git。旧 `src/aurabot-modules/` 只保留导航；[构建说明](MODULE_BUILD.md)是新成员修改和导出的依据。
+- main 已启用必经 PR、双平台必需检查、需最新主线、管理员受限、禁强推/删除及解决讨论要求。尚无独立审查人登记，批准数为 0，见[保护记录](CI_AND_BRANCH_PROTECTION.md)。
+- 仓库按用户决定保持 Public；本次没有变更成员权限、部署生产或配置后台定时维护。
+
+## 源码与独立包
+
+| 位置 / profile | 当前作用 | 本次验证 |
+| --- | --- | --- |
+| `src/fangyuan-agent/modules/` | 46 文件的基础研发实现，唯一共享维护源 | 既有默认模块回归继续运行 |
+| `src/aurabot-runtime-overrides/` | 12 个有意差异及运行独有文件 | 六个入口/存储/调度差异保留，不重新选择业务策略 |
+| runtime 包 | 基础源码减去专属样例，再加运行覆盖；51 个模块文件 | 与迁移前逐文件 LF 字节一致，39 份共享副本已删除 |
+| development 包 | 46 个基础模块文件，含表达样例 | 以基础实现独立导出，差异不混入 |
+| `manifest.json` | 来源、提交、输入状态及逐文件 SHA-256 | 同输入重复构建内容稳定；不是部署许可 |
+
+根目录 `npm run check` 为完整离线入口；`npm run build:modules` 默认只输出计划，显式 `--out NEW_DIRECTORY` 才创建新包，拒绝覆盖及源码/Git/运行树中的输出。新增源码先暂存，未跟踪文件不会进入包。人物卡、基础 core 与生成包保持同一完整正文，公开模板仍全局关闭、dryRun 开启。
+
+原始两套树在 `fe5d06c` 的 38 / 43 文件、以及 `396d22e` 的 44 / 49 文件均是历史统计；冷却补齐后的 46 / 51 是本次布局迁移起点。现在维护基础 46 与覆盖 12，不能再按旧路径维护两份完整源码。
+
+## 运行来源与证据边界
+
+| 日期与证据 | 已知范围 | 未据此推断 |
+| --- | --- | --- |
+| 2026-11-02 只读三入口观察 | conversation 匹配 `c05074b`，learning / stickers 匹配 `fe5d06c` 的旧运行快照 | 切换后的当前入口、完整发布或真实效果；旧哈希见历史映射 |
+| [管理员交接 `0646f85`](https://github.com/Ming-zhishan/FangYuan/blob/0646f85591fc5891f57a8302505001e00863ce03/docs/dialogue-quality/PRINCIPALS-PERSONA-20261102.md) | 业务管理子集与隔离宿主适配有部署记录 | 整套 PR #11 全部采用 |
+| [群聊恢复 `215a318`](https://github.com/Ming-zhishan/FangYuan/blob/215a318f2e76e585b6a8d72e9480c13d35c863e6/docs/dialogue-quality/CHAT-RESUME-20261103.md) | 授权群恢复、私聊保持，真实 @ 优先且普通参与受限 | 新素材群发、全部历史学习或质量验收 |
+| [人格切换 `396d22e`](https://github.com/Ming-zhishan/FangYuan/blob/396d22e07707eed1478c470e2b32177c4d7c386d/docs/dialogue-quality/PERSONA-CANON-20261103.md)，用户确认成功 | 2026-11-03 12:06 已验收完整人格与朋友配置按限定范围切换 | 长期自然度、多轮或已知推断问题全部解决 |
+| 本轮只读模块哈希与保护代码核对 | 已知路径中 46 个匹配研发快照；另定位并补齐 diary/profile 的四个保护文件，API 为宿主生成说明差异 | 未列路径、实际进程缓存、配置或私人数据已经全部核验 |
+
+人格采用 `4391281` 的已审阅完整正文，精确组合验证为 `e3365cf`。切换包含卡片、core、provenance 和 conversation 关系上下文接入，启用 `friendship=deep_allies`，`allyAttention` 仍关闭；按固定记录保留既有通道规则、输入修复、管理员与群私聊。仓库模板继续关闭，不能整份覆盖实际配置。
+
+本轮哈希只读取授权模块源文件，不读取真实账号、配置、聊天或数据库。直接核对范围和独立宿主验证详见[整合基线](INTEGRATION_BASELINE.md#补齐既有自主动作保护)。宿主 API.md 可再生成；源码包、宿主、实际数据和配置仍需组合记录，不能把模块包称为完整生产版本。
+
+### 后续运行交接记录
+
+此锚点供旧链接进入：上表按日期区分观察与后续交接。旧“群暂停 / 白名单为空 / 新人格未上线”只对应各自历史阶段；媒体专项的指定私聊验收与素材准入仍有效，普通对话恢复不扩大媒体发布范围。
+
+## 后续研发与本包范围
+
+更晚的只读复核中，本包 51 个路径有 46 个匹配运行磁盘，API.md 为生成说明差异，另有 conversation/index、learning/history、learning/index、live-guard/social-tools 四个代码文件不同。同期对话负责人新增以下堆叠草稿，尚未纳入本次固定整合基线：
+
+| 工作 | 固定核对版本 | 交接报告与边界 |
+| --- | --- | --- |
+| [PR #21：群参与与禁言感知](https://github.com/Ming-zhishan/FangYuan/pull/21) | `8b8d816` | 报告 16:49 已更新 conversation 及配置，按用户决定取消次数配额；不是当前包行为 |
+| [PR #22：优先补读新缺口](https://github.com/Ming-zhishan/FangYuan/pull/22) | `df10348` | 报告 19:42 更新 learning 两文件；历史覆盖和自动补答语义分别验收 |
+| [PR #23：私聊与空间评论](https://github.com/Ming-zhishan/FangYuan/pull/23) | `1e1d70e` | 有后续恢复与有限回读记录，篇幅自然度等仍待反馈，保留独立研发范围 |
+
+随后出现 [PR #25：统一布局接续与共同所有者协作](https://github.com/Ming-zhishan/FangYuan/pull/25)，固定核对头 `4ef6324`，目标 main、仍为草稿。负责人报告已将 #21–#23 适配到 PR #24 布局，Node 243、Python 5 + 9、生成包 56 文件及隔离宿主 3 项通过，并有共同所有者的单独部署交接；这是负责人报告，尚未由本轮合入或重新验收，具体以其固定交接为准。
+
+这些变更继续由成果负责人维护，本次没有覆盖其代码或生产。QQ 所有者/管理身份不自动授予 GitHub、设备或服务器权限。runtime 是主线已采用基线的运行差异 profile，**不代表自动跟随当前生产**。后续迁入须按新源码路径和现有六处差异逐项回归；不能直接把本包覆盖运行实例，也不能把早期小时上限当作今天实际配置。
+
+## 已执行检查
+
+- 基线整合：本机 Node 199 项、Python 契约 9 项及合成 smoke / 人物结构检查通过；CI 两平台成功。
+- 冷却恢复：Node 208 项通过，9 项新回归覆盖边界和实际模块入口；独立 Aurabot 1.1.13 副本的人格/业务管理员 2 项集成通过，使用假 DSH / OneBot。
+- 模块布局：构建专项 9 项与完整 Node 217 项、媒体 Python 5 项及评测 Python 9 项通过；runtime 的 51 文件迁移字节一致。后续选择新运行包的运维选项单独回归，最终结论以本批 CI 为准。
+- 历史归档：Python AST 82 文件、JSON 3 文件及 PowerShell 21 文件解析通过；默认 Node 218 项、Python 5 + 9 项与合成评测通过，提交审计 130 文件无阻断或待复核标记。未执行历史脚本。
+- 2026-11-04 全新远端克隆：Node 218、Python 5 + 9、合成评测与人物同步通过；runtime 51 / development 46 文件分别生成，Git 状态保持干净，详见[整理验收](REORGANIZATION_ACCEPTANCE.md)。
+- 来源工具未提供私人原著库时仅检查结构，checked_sources 为 0；不将 13 段定位清单视为本轮再次读取原文。离线测试不发送真实 QQ 或调用模型。
+
+## 仍需完成
+
+- 当前跨模块 SQL、双向服务访问和发送回执捕获已在[接口与数据契约](INTERFACE_CONTRACTS.md)注明调用方、失败与释放语义；内部耦合保留为可独立处理的技术债，不宣称本轮已全部重写。
+- 112 个历史源文件已集中至 [legacy/](../legacy/README.md)，已清理发现的账号、人名种子与私人路径；53 个 Python 入口与 21 个 PowerShell 脚本增加防误执行提示。网关实际版本、全部旧链路复现和公开 Git 历史治理仍待专项核查。
+- 平台、数据、发布接任人的具体 GitHub 身份未登记；私有依赖、完整发布组成、备份恢复与接收侧体验资料仍需交接。
+- 尚无统一覆盖全部源文件与素材的再分发许可，不擅自补 MIT；媒体工厂及其他试验仍按各自来源/授权核查。
+
+本轮结构整理结果见[验收记录](REORGANIZATION_ACCEPTANCE.md)，持续业务、技术债与外部交接条件见[后续边界](SOURCE_INTEGRATION_PLAN.md)。接手顺序见[接任指南](MAINTAINER_HANDOFF.md)。

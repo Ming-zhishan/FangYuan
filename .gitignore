@@ -65,3 +65,10 @@
 .vscode/
 .idea/
 .DS_Store
+
+# Reproducible module bundles are generated from tracked sources.
+/artifacts/
+**/runtime-tests/
+
+# Local agent workspace notes; not part of the source tree.
+.workbuddy/

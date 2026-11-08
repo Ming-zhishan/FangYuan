@@ -3,13 +3,14 @@
   "projectRoot": "<PROJECT_ROOT>",
   "canonical": {
     "agentSource": "src/fangyuan-agent",
-    "aurabotModulesBaseline": "src/aurabot-modules",
+    "aurabotModulesBaseline": "artifacts/runtime-modules/modules",
     "mediaResearch": "research/media-catalog",
     "qqRuntime": "runtime/qq-stack",
     "dshProduction": "runtime/dsh-live",
     "legacyOperations": "operations/legacy-tools",
     "historicalReleases": "archive/legacy-releases",
-    "qqBootstrap": "src/qq-bootstrap"
+    "qqBootstrap": "legacy/qq-bootstrap",
+    "aurabotRuntimeOverrides": "src/aurabot-runtime-overrides"
   },
   "physicalBacking": {
     "qqRuntime": "services/qq/work",

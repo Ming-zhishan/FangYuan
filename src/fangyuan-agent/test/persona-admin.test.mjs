@@ -16,6 +16,7 @@ test('compiled persona respects a changed persona card instead of silently repla
   const full = readFileSync(new URL('../personas/gu-yue-fang-yuan.md', import.meta.url), 'utf8').replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '').trim()
   const compact = persona(full)
   assert.equal(compact, readFileSync(new URL('../modules/fangyuan/core.txt', import.meta.url), 'utf8').trim())
+  assert.equal(compact.replaceAll('\r\n','\n'), full.replaceAll('\r\n','\n'), 'the reviewed canonical persona must reach runtime without a second compressed version')
   assert.match(compact, /古月方源|九转炼道尊者|永生|关系不代替权限/)
 })
 test('forgetting a source excludes its facts, original text, generated answers and relationship inference', (t) => {
