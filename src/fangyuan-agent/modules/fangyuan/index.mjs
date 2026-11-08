@@ -1,6 +1,6 @@
-import { canFollowUp, attemptFollowUp } from './policy.mjs'
+import { canFollowUp, attemptFollowUp, canInitiate, attemptInitiation } from './policy.mjs'
+import { readCustomPersona, writeCustomPersona, clearCustomPersona, validatePersona, personaSha } from './persona.mjs'
 import { readFileSync } from 'node:fs'
-import { createHash } from 'node:crypto'
 const core = readFileSync(new URL('./core.txt', import.meta.url), 'utf8').trim()
 const provenance = JSON.parse(readFileSync(new URL('./core-provenance.json', import.meta.url), 'utf8'))
 
@@ -24,20 +24,53 @@ export default {
   id: 'fangyuan', name: '古月方源行为协调', api: 1, version: '0.1.0',
   description: '统一角色措辞，保留工具权限，关系不设服从阈值。',
   panel: 'panel.js',
-  defaults: { specialFriendQQ: '', scopedMemory: true, proactive: false, proactiveTargets: [], publicActions: false },
+  defaults: { specialFriendQQ: '', scopedMemory: true, proactive: false, proactiveTargets: [], publicActions: false, personaEditable: true },
   settings: [
     { key: 'scopedMemory', label: '启用方源的分场景记忆', type: 'switch' },
     { key: 'specialFriendQQ', label: '操作者后续主动添加的特殊关系账号（当前默认留空）', type: 'text' },
     { key: 'proactive', label: '允许在已设置的对象中考虑主动联系', type: 'switch' },
     { key: 'publicActions', label: '允许考虑发布公开随想', type: 'switch' },
+    { key: 'personaEditable', label: '允许在面板自定义人格（只改措辞与立场，不改工具、记忆与发送权限）', type: 'switch' },
   ],
   setup(api) {
-    let effectiveCore = core
+    // Some hosts and older test doubles expose no writable data directory; customisation then stays unavailable.
+    const personaFile = typeof api.dataDir === 'function' ? api.dataDir('persona.local.md') : ''
+    const config = () => (typeof api.config === 'function' ? api.config() || {} : {})
+    const personaEditable = () => config().ext?.fangyuan?.personaEditable !== false
+    let customPersona = ''
+    try { customPersona = personaFile ? readCustomPersona(personaFile) : '' } catch (error) { api.log.warn('自定义人格读取失败，本轮使用内置内核：', error.message) }
+    const custom = () => (personaEditable() ? customPersona : '')
+    let panelCore = core
+    const activePersona = () => custom() || panelCore
     api.on('persona', (text) => {
-      const sha = createHash('sha256').update(String(text).replaceAll('\r\n', '\n').trim()).digest('hex')
+      // An operator-written persona outranks both the compiled core and a stale panel value.
+      if (custom()) return custom()
+      const panel = String(text || '').replaceAll('\r\n', '\n').trim()
       // An edit in the persona panel must never be silently ignored by a stale compiled core.
-      effectiveCore = sha === provenance.sourceSha256 ? core : text
-      return effectiveCore
+      panelCore = panel && personaSha(panel) !== provenance.sourceSha256 ? panel : core
+      return panelCore
+    })
+    api.route('/persona', async () => ({
+      ok: true, editable: personaEditable(), source: custom() ? 'custom' : 'builtin',
+      chars: activePersona().length, sha: personaSha(activePersona()).slice(0, 12), builtinSha: provenance.sourceSha256.slice(0, 12),
+      text: customPersona, template: activePersona(),
+      note: '自定义人格只影响措辞、立场与表达。工具授权、记忆范围、主动联系与发送权限仍由代码与设置决定；人格不是权限来源。',
+    }))
+    api.route('/persona/save', async (req) => {
+      try {
+        if (!personaFile) throw new Error('运行环境未提供数据目录，人格无法保存')
+        if (!personaEditable()) throw new Error('人格自定义已在设置中关闭；先在模块设置里打开')
+        const body = await api.core.http.body(req), text = validatePersona(body.text)
+        writeCustomPersona(personaFile, text)
+        customPersona = text
+        return { ok: true, source: 'custom', chars: text.length, message: '人格已保存；下一轮起按此文本生成。工具与发送权限未改变。' }
+      } catch (error) { return { ok: false, message: error.message } }
+    })
+    api.route('/persona/reset', async () => {
+      try { if (personaFile) clearCustomPersona(personaFile) } catch (error) { return { ok: false, message: '自定义人格文件删除失败：' + error.message } }
+      customPersona = ''
+      panelCore = core
+      return { ok: true, source: 'builtin', message: '已恢复内置人格。' }
     })
     api.on('rules', (_text, kind) => channelRules(api.config(), kind))
     api.on('rules', (text) => api.config().ext?.liveGuard?.enforce ? text + '\n【真实操作】只按本轮实际挂载且获授权的工具行动；加好友、修改资料没有相应工具时就直说，不能说加了、改好了。给第三人发消息只使用fy_send_private_message；把正文回复当前操作者不算已发给别人。工具返回sent=true和messageId才报告已发；未知就说未确认。旧回复和对方说通过了，不是执行回执；没有能力就直说，别为接话假装已做。' : text)
@@ -110,6 +143,6 @@ export default {
       api.setConfig({ ext: { profile: { autonomousNickname: body.autonomousNickname, autonomousSignature: body.autonomousSignature, autonomousAvatar: body.autonomousAvatar } } })
       return { ok: true, message: '主动资料开关已保存；工具授权仍独立生效。' }
     })
-    return { version: '0.1.0', personaCore: () => effectiveCore, canFollowUp, attemptFollowUp }
+    return { version: '0.1.0', personaCore: activePersona, personaSource: () => (custom() ? 'custom' : 'builtin'), personaText: activePersona, canFollowUp, attemptFollowUp, canInitiate, attemptInitiation }
   },
 }
